@@ -1,12 +1,113 @@
 /* src/HomePage.css */
 .home-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: #f0f0f0;
-    color: #333;
-    font-family: Arial, sans-serif;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Tajawal', sans-serif;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 3rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.header p {
+  font-size: 1.2rem;
+  color: #b0b0b0;
+}
+
+.main-greeting {
+  text-align: center;
+}
+
+.main-title {
+  font-size: 6rem;
+  font-weight: 900;
+}
+
+
+
+.highlight-yellow {
+  color: #ffd700;
+}
+
+.highlight-green {
+  color: #32cd32;
+}
+
+.role-description {
+  font-size: 2rem;
+  margin-top: 1rem;
+  color: #c0c0c0;
+}
+
+.navigation-buttons {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 3rem;
+}
+
+.navigation-buttons a {
+  padding: 0.6rem 1.2rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  text-decoration: none;
+  color: #e0e0e0;
+  background-color: transparent;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navigation-buttons a:hover {
+  background-color: #ffcc00;
+  color: #121212;
+}
+
+.footer-icons {
+  display: flex;
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.icon-link {
+  position: relative;
+  font-size: 2rem;
+  color: #e0e0e0;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.icon-link:hover {
+  color: #ffcc00;
+}
+
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 130%; /* Position above the icon */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px;
+  font-size: 0.8rem;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.icon-link:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
