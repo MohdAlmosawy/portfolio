@@ -71,19 +71,20 @@ const HomePage = () => {
 
       {/* Footer */}
       <footer className="footer-icons">
-        <a href="https://github.com/your-github" target="_blank" rel="noopener noreferrer" className="icon-link">
+        <a href="https://github.com/MohdAlmosawy" target="_blank" rel="noopener noreferrer" className="icon-link">
           <FaGithub />
           <span className="tooltip">Github</span>
         </a>
-        <a href="your-cv-link" target="_blank" rel="noopener noreferrer" className="icon-link">
+        <a href="https://drive.google.com/drive/folders/1c2NmVJNx2Z9m_xCsZGgjDufk3dAtDnOM?usp=sharing" target="_blank" rel="noopener noreferrer" className="icon-link">
           <FaDownload />
           <span className="tooltip">Download CV</span>
         </a>
-        <a href="https://linkedin.com/in/your-linkedin" target="_blank" rel="noopener noreferrer" className="icon-link">
+        <a href="https://www.linkedin.com/in/smohdaqeel/" target="_blank" rel="noopener noreferrer" className="icon-link">
           <FaLinkedin />
           <span className="tooltip">LinkedIn</span>
         </a>
       </footer>
+
     </div>
   );
 };
