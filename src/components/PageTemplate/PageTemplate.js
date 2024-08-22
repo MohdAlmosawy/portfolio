@@ -14,7 +14,7 @@ const PageTemplate = ({ children }) => {
   return (
     <div className="page-template">
       <header className="page-header">
-        <NavButtons showHomeButton={true} onButtonClick={handleButtonClick} />
+        <NavButtons showHomeButton={true} centered={true} onButtonClick={handleButtonClick} />
       </header>
 
       <main className="page-content">

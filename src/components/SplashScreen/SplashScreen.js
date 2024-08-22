@@ -18,7 +18,7 @@ const greetings = [
   "Olá",
 ];
 
-const intervalDuration = 400; // Duration for each greeting
+const intervalDuration = 500; // Duration for each greeting
 const animationSettings = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
