@@ -1,0 +1,12 @@
+/* src/HomePage.css */
+.home-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: #f0f0f0;
+    color: #333;
+    font-family: Arial, sans-serif;
+  }
+  
