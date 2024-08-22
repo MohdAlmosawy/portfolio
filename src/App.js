@@ -15,7 +15,7 @@ function App() {
   };
 
   return (
-    <Router basename="/portfolio"> {/* Set basename */}
+    <Router basename={process.env.PUBLIC_URL}> {/* Using basename */}
       <div className="App">
         {showSplash ? (
           <SplashScreen onTransitionEnd={handleTransitionEnd} />
