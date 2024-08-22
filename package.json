@@ -1,6 +1,6 @@
 {
   "name": "portfolio",
-  "homepage": "https://MohdAlmosawy.github.io/portfolio",
+  "homepage": "https://sayedmohd.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -19,7 +19,7 @@
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "start": "cross-env PUBLIC_URL=/portfolio react-scripts --openssl-legacy-provider start",
+    "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
