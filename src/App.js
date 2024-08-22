@@ -15,7 +15,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <Router basename="/portfolio"> {/* Set basename */}
       <div className="App">
         {showSplash ? (
           <SplashScreen onTransitionEnd={handleTransitionEnd} />
