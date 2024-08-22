@@ -1,8 +1,8 @@
 // src/App.js
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 
-// Updated import paths
 import SplashScreen from './components/SplashScreen/SplashScreen';
 import HomePage from './components/HomePage/HomePage';
 import ComingSoon from './components/ComingSoon/ComingSoon';
@@ -10,15 +10,23 @@ import ComingSoon from './components/ComingSoon/ComingSoon';
 function App() {
   const [showSplash, setShowSplash] = useState(true);
 
-  // Handle transition end
   const handleTransitionEnd = () => {
     setShowSplash(false);
   };
 
   return (
-    <div className="App">
-      {showSplash ? <SplashScreen onTransitionEnd={handleTransitionEnd} /> : <HomePage />}
-    </div>
+    <Router>
+      <div className="App">
+        {showSplash ? (
+          <SplashScreen onTransitionEnd={handleTransitionEnd} />
+        ) : (
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/coming-soon" element={<ComingSoon />} />
+          </Routes>
+        )}
+      </div>
+    </Router>
   );
 }
 

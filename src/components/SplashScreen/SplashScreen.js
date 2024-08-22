@@ -1,5 +1,5 @@
 // src/SplashScreen.js
-import React from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import './SplashScreen.css';
 
@@ -28,9 +28,13 @@ const animationSettings = {
 };
 
 const SplashScreen = ({ onTransitionEnd }) => {
-  const [index, setIndex] = React.useState(0);
+  const [index, setIndex] = useState(0);
 
-  React.useEffect(() => {
+  const handleTransitionEnd = useCallback(() => {
+    onTransitionEnd();
+  }, [onTransitionEnd]);
+
+  useEffect(() => {
     const timer = setInterval(() => {
       setIndex(prevIndex => (prevIndex + 1) % greetings.length);
     }, intervalDuration);
@@ -38,14 +42,14 @@ const SplashScreen = ({ onTransitionEnd }) => {
     // Clear the interval and trigger transition end after all greetings are shown
     const transitionTimer = setTimeout(() => {
       clearInterval(timer);
-      onTransitionEnd();
+      handleTransitionEnd();
     }, intervalDuration * greetings.length);
 
     return () => {
       clearInterval(timer);
       clearTimeout(transitionTimer);
     };
-  }, []);
+  }, [handleTransitionEnd]);
 
   return (
     <div className="splash-screen">

@@ -1,7 +1,9 @@
-// src/HomePage.js
 import React, { useState, useEffect } from 'react';
 import './HomePage.css';
 import { FaGithub, FaLinkedin, FaDownload } from 'react-icons/fa';
+import ComingSoon from '../ComingSoon/ComingSoon'; // Import ComingSoon component
+import NavButtons from '../NavButtons/NavButtons'; // Import the NavButtons component
+
 
 const roles = [
   "Motion Designer",
@@ -20,6 +22,7 @@ const roles = [
 const HomePage = () => {
   const [currentRole, setCurrentRole] = useState("");
   const [isInitial, setIsInitial] = useState(true);
+  const [selectedSection, setSelectedSection] = useState(null); // State to track selected section
 
   useEffect(() => {
     if (isInitial) {
@@ -40,51 +43,52 @@ const HomePage = () => {
     }
   }, [isInitial]);
 
+  // Handle button click to show Coming Soon
+  const handleButtonClick = (section) => {
+    setSelectedSection(section);
+  };
+
   return (
     <div className="home-page">
-      {/* Header */}
-      <header className="header">
-        <h2>Hi, This is Sayed Mohamed Ebrahim</h2>
-      </header>
+      {selectedSection ? (
+        <ComingSoon />
+      ) : (
+        <>
+          {/* Header */}
+          <header className="header">
+            <h2>Hi, This is Sayed Mohamed Ebrahim</h2>
+          </header>
 
-      {/* Main Greeting */}
-      <div className="main-greeting">
-        <h1 className="main-title">
-          Hello World!
-        </h1>
-        <p className="role-description">
-          I’m a <span className="highlight-yellow">{isInitial ? "" : roles[currentRole]}</span><br />
-          Jack of all trades, master of MANY
-        </p>
-      </div>
+          {/* Main Greeting */}
+          <div className="main-greeting">
+            <h1 className="main-title">
+              Hello World!
+            </h1>
+            <p className="role-description">
+              I’m a <span className="highlight-yellow">{isInitial ? "" : roles[currentRole]}</span><br />
+              Jack of all trades, master of MANY
+            </p>
+          </div>
 
-      {/* Navigation Buttons */}
-      <div className="navigation-buttons">
-        <a href="#play-my-path">Play My Path</a>
-        <a href="#motioner">Motion-er</a>
-        <a href="#backend-er">Backend-er</a>
-        <a href="#odooer">Odoo-er</a>
-        <a href="#devopser">DevOps-er</a>
-        <a href="#sysadminer">SysAdmin-er</a>
-        <a href="#live-my-journey">Live My Journey</a>
-      </div>
+          <NavButtons onButtonClick={handleButtonClick} /> {/* Use NavButtons component */}
 
-      {/* Footer */}
-      <footer className="footer-icons">
-        <a href="https://github.com/MohdAlmosawy" target="_blank" rel="noopener noreferrer" className="icon-link">
-          <FaGithub />
-          <span className="tooltip">Github</span>
-        </a>
-        <a href="https://drive.google.com/drive/folders/1c2NmVJNx2Z9m_xCsZGgjDufk3dAtDnOM?usp=sharing" target="_blank" rel="noopener noreferrer" className="icon-link">
-          <FaDownload />
-          <span className="tooltip">Download CV</span>
-        </a>
-        <a href="https://www.linkedin.com/in/smohdaqeel/" target="_blank" rel="noopener noreferrer" className="icon-link">
-          <FaLinkedin />
-          <span className="tooltip">LinkedIn</span>
-        </a>
-      </footer>
-
+          {/* Footer */}
+          <footer className="footer-icons">
+            <a href="https://github.com/MohdAlmosawy" target="_blank" rel="noopener noreferrer" className="icon-link">
+              <FaGithub />
+              <span className="tooltip">Github</span>
+            </a>
+            <a href="https://drive.google.com/drive/folders/1c2NmVJNx2Z9m_xCsZGgjDufk3dAtDnOM?usp=sharing" target="_blank" rel="noopener noreferrer" className="icon-link">
+              <FaDownload />
+              <span className="tooltip">Download CV</span>
+            </a>
+            <a href="https://www.linkedin.com/in/smohdaqeel/" target="_blank" rel="noopener noreferrer" className="icon-link">
+              <FaLinkedin />
+              <span className="tooltip">LinkedIn</span>
+            </a>
+          </footer>
+        </>
+      )}
     </div>
   );
 };

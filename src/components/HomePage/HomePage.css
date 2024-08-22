@@ -54,27 +54,7 @@
 }
 
 .navigation-buttons {
-  display: flex;
-  gap: 1.2rem;
   margin-top: 3rem;
-  flex-wrap: wrap; /* Allows buttons to wrap if needed */
-  justify-content: center;
-}
-
-.navigation-buttons a {
-  padding: 0.6rem 1.2rem;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 1.2rem;
-  text-decoration: none;
-  color: #e0e0e0;
-  background-color: transparent;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.navigation-buttons a:hover {
-  background-color: #ffcc00;
-  color: #121212;
 }
 
 .footer-icons {
