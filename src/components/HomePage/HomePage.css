@@ -14,19 +14,35 @@
   padding: 0 1rem; /* Adds padding for better content spacing */
 }
 
+.inline-text {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* This centers the content horizontally */
+  text-align: center; /* Ensure text is centered */
+}
+
+.inline-text h2, .inline-text p {
+  margin: 0;
+  padding: 0;
+  text-align: center; /* Center text within each element */
+}
+
 .header {
   text-align: center;
   margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center align the entire header content */
 }
 
-.header h1 {
-  font-size: 3rem;
+.header h2 {
+  font-size: 1.8rem;
   margin: 0;
   font-weight: 700;
 }
 
 .header p {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: #b0b0b0;
 }
 

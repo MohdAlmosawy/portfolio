@@ -56,19 +56,21 @@ const HomePage = () => {
         <>
           {/* Header */}
           <header className="header">
-            <h2>Hi, This is Sayed Mohamed Ebrahim</h2>
+            <p>It’s impossible to fit myself into just one box, so here, I’m introducing a few of the many.</p>
+            <div className="inline-text"><h2>I’m Sayed Mohamed Ebrahim, </h2><p> &nbsp; and ... drumroll please 🥁 ...</p></div>
           </header>
 
           {/* Main Greeting */}
           <div className="main-greeting">
             <h1 className="main-title">
-              Hello World!
+              Hello World!!
             </h1>
             <p className="role-description">
               I’m a <span className="highlight-yellow">{isInitial ? "" : roles[currentRole]}</span><br />
-              Jack of all trades, master of MANY
+              Jack of all trades, master of MANY.
             </p>
           </div>
+
 
           <NavButtons onButtonClick={handleButtonClick} /> {/* Use NavButtons component */}
 
