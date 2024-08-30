@@ -6,6 +6,7 @@ import './App.css';
 import SplashScreen from './components/SplashScreen/SplashScreen';
 import HomePage from './components/HomePage/HomePage';
 import ComingSoon from './components/ComingSoon/ComingSoon';
+import TerminalPage from './components/TerminalPage/TerminalPage';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -23,6 +24,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/coming-soon" element={<ComingSoon />} />
+            <Route path="/terminal-test" element={<TerminalPage />} />
           </Routes>
         )}
       </div>
