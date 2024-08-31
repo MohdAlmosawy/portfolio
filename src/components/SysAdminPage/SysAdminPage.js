@@ -77,7 +77,7 @@ const SysAdminPage = () => {
         'network': {
           type: 'directory',
           children: {
-            'skills.txt': { type: 'file' },
+            'network_skills.txt': { type: 'file' },
             'troubleshooting.txt': { type: 'file' },
           },
         },
@@ -255,30 +255,261 @@ const getFileContent = (path, fileName, options = '') => {
     } else if (fileName === 'README.md' && path === '~/projects/Backup_Automation') {
       return [
         "Project: Backup Automation System",
-        "Description: Developed and deployed a fully automated backup system across all company servers,",
-        "ensuring data integrity and security.",
+        "Description: As a System Administrator managing Odoo environments, I developed and deployed a fully automated backup system to ensure data integrity and security across all company servers.",
         "Key Features:",
-        "- Automated daily and weekly backups with logging and error notifications.",
-        "- Integrated with cloud storage solutions for offsite backups.",
-        "- Reduced manual backup efforts by 80%."
+        "- Automated daily and weekly backups with logging and error notifications to monitor backup status.",
+        "- Integrated cloud storage solutions for offsite backups, providing a robust disaster recovery strategy.",
+        "- Reduced manual backup efforts by 80% through automation, freeing up time for more strategic tasks.",
+        "",
+        "Tools Used:",
+        "- **auto_backup**: Configured to schedule regular automated backups of the Odoo database to prevent data loss.",
+        "- **database_cleanup**: Integrated to optimize database performance before backups, ensuring efficient storage and retrieval.",
+        "- **attachment_queue**: Utilized to manage the queuing of attachments during backup processes, preventing server overload."
+      ];
+    } else if (fileName === 'README.md' && path === '~/projects/Security_Audits') {
+      return [
+        "Project: Security Audits",
+        "Description: Conducted comprehensive security audits within Odoo environments to identify vulnerabilities, enforce compliance, and ensure the safety of sensitive business data.",
+        "Key Features:",
+        "- Implemented automated vulnerability scanning tools to regularly check Odoo system configurations for security gaps.",
+        "- Conducted manual penetration testing to simulate potential cyber-attacks and assess the robustness of system defenses.",
+        "- Developed detailed security reports and recommended actions to mitigate identified risks.",
+        "- Enforced security policies such as multi-factor authentication and IP whitelisting within Odoo to prevent unauthorized access.",
+        "",
+        "Tools Used:",
+        "- **auditlog**: Deployed to log and monitor all actions within the Odoo system, providing an audit trail for security analysis.",
+        "- **sentry**: Configured to automatically report errors and security incidents, allowing for real-time monitoring and quick response.",
+        "- **server_action_logging**: Used to log server actions, enhancing the ability to detect and respond to suspicious activities."
+      ];
+    } else if (fileName === 'README.md' && path === '~/projects/Cloud_Migration') {
+      return [
+        "Project: Cloud Migration",
+        "Description: Led the migration of Odoo environments from on-premises infrastructure to cloud-based solutions, optimizing scalability, performance, and cost-efficiency.",
+        "Key Features:",
+        "- Conducted a thorough assessment of the existing Odoo infrastructure to identify cloud-compatible components.",
+        "- Developed a comprehensive migration plan, including risk management and rollback procedures to ensure a smooth transition.",
+        "- Utilized AWS and Google Cloud platforms to deploy scalable and flexible Odoo environments.",
+        "- Automated deployment pipelines were set up to minimize downtime and streamline the migration process.",
+        "",
+        "Tools Used:",
+        "- **module_auto_update**: Configured to keep all Odoo modules up-to-date automatically during and after the migration process.",
+        "- **bus_alt_connection**: Implemented to manage database connections effectively using PgBouncer during high-load scenarios.",
+        "- **base_cron_exclusion**: Used to exclude non-critical scheduled actions during the migration process, ensuring stability."
+      ];
+    } else if (fileName === 'README.md' && path === '~/projects/Network_Optimization') {
+      return [
+        "Project: Network Optimization",
+        "Description: Optimized the network architecture supporting Odoo environments to improve performance, security, and reliability.",
+        "Key Features:",
+        "- Analyzed Odoo network traffic patterns using advanced monitoring tools to identify and resolve bottlenecks.",
+        "- Implemented VLAN segmentation within the Odoo environment to enhance security and manage network traffic efficiently.",
+        "- Deployed Quality of Service (QoS) policies to prioritize critical Odoo services, ensuring optimal performance.",
+        "- Configured and optimized firewall rules and routing protocols to minimize latency and protect Odoo data from potential threats.",
+        "",
+        "Tools Used:",
+        "- **base_cron_exclusion**: Managed cron jobs to prevent network overload during peak operation times in the Odoo environment.",
+        "- **session_db**: Configured to store Odoo sessions in the database, improving performance and reliability.",
+        "- **scheduler_error_mailer**: Utilized to send alerts for any network-related errors within the Odoo environment, facilitating quick troubleshooting."
+      ];
+    } else if (fileName === 'README.md' && path === '~/projects/Monitoring_Dashboard') {
+      return [
+        "Project: Monitoring Dashboard",
+        "Description: Developed a comprehensive monitoring dashboard to oversee the health and performance of Odoo environments, enabling proactive system management.",
+        "Key Features:",
+        "- Integrated various data sources, including server logs, application metrics, and network traffic, into a unified Odoo monitoring dashboard.",
+        "- Utilized Grafana and Prometheus for real-time data visualization and alerting on critical Odoo incidents.",
+        "- Automated the collection and analysis of Odoo performance data, identifying trends and potential issues before they impact operations.",
+        "- Set up role-based access controls to secure the monitoring dashboard and provide tailored views for different stakeholders.",
+        "",
+        "Tools Used:",
+        "- **server_action_logging**: Employed to log Odoo server actions and monitor system performance, providing essential data for the dashboard.",
+        "- **tracking_manager**: Configured to track changes across all fields within the Odoo environment, ensuring accurate and detailed monitoring.",
+        "- **attachment_queue**: Used to manage the queue of log files and performance data, ensuring timely updates to the monitoring dashboard."
       ];
     } else if (fileName === 'README.md' && path === '~/experience/Next_Level_Trading') {
       return [
-        "ERP System Administrator, Next Level Trading (Feb 2022 - Jul 2024):",
+        "ERP System Administrator, Next Level Trading (Feb 2022 - Current):",
         "- Customized Odoo ERP to enhance operational efficiency and reduce manual processes.",
         "- Managed IT infrastructure, including server maintenance, network configuration, and software updates.",
         "- Implemented a comprehensive disaster recovery plan, achieving zero data loss.",
         "- Conducted regular system performance evaluations and optimizations, maintaining 99% uptime."
       ];
+    } else if (fileName === 'README.md' && path === '~/experience/Ghost_Computers') {
+      return [
+        "IT Support Technician, Ghost Computers (May 2015 - Apr 2016):",
+        "- Resolved critical system issues, including a major ransomware attack.",
+        "- Streamlined IT support processes, reducing resolution times by 60%.",
+        "- Trained junior technicians in troubleshooting and customer service."
+      ];
+    } else if (fileName === 'README.md' && path === '~/experience/Ministry_of_Labor') {
+      return [
+        "Help Desk Technician, Ministry of Labour - Internship (Mar 2017 - May 2017):",
+        "- Troubleshot and resolved various hardware, software, and network connectivity problems.",
+        "- Strong understanding of networking concepts and troubleshooting techniques",
+        "- Conducted comprehensive IT inventory checks, updating PCs and devices and assessing their condition.",
+      ];
+    } else if (fileName === 'deployment.txt' && path === '~/odoo_sh') {
+      return [
+        "**Odoo.sh Deployment and Environment Management**",
+        "",
+        "- Managed multiple Odoo.sh instances for staging, testing, and production environments.",
+        "- Configured automated backups, regular updates, and monitoring to ensure high availability and reliability.",
+        "- Utilized Odoo.sh's built-in CI/CD tools to automate deployment processes, reducing downtime and deployment errors.",
+        "- Ensured seamless migration of databases and modules between environments, maintaining data integrity and consistency."
+      ];
+    } else if (fileName === 'customization.txt' && path === '~/odoo_sh') {
+      return [
+        "**Odoo.sh Customization and Module Management**",
+        "",
+        "- Customized Odoo modules directly within the Odoo.sh environment to meet specific business needs.",
+        "- Managed module dependencies and conflicts, ensuring a smooth and error-free deployment process.",
+        "- Leveraged Odoo.sh's tools to develop, test, and deploy custom modules efficiently, reducing development time by 40%.",
+        "- Automated routine tasks such as module updates, server reboots, and log monitoring to streamline operations."
+      ];
+    } else if (fileName === 'performance.txt' && path === '~/odoo_sh') {
+      return [
+        "**Odoo.sh Performance Monitoring and Optimization**",
+        "",
+        "- Implemented performance monitoring tools to track server load, response time, and database performance.",
+        "- Conducted regular audits to optimize server performance and database queries, reducing latency by 30%.",
+        "- Utilized caching strategies and load balancing to enhance the scalability and responsiveness of the Odoo environment.",
+        "- Managed user roles and access controls to optimize system resources and maintain security compliance.",
+      ];
+    } else if (fileName === 'network_skills.txt' && path === '~/network') {
+      return [
+        "**Network Management Skills (CCNA and Network+)**",
+        "",
+        "- Certified in CCNA (Cisco Certified Network Associate) and CompTIA Network+.",
+        "- Proficient in configuring and managing network devices, including routers, switches, and firewalls.",
+        "- Experience in setting up secure VPNs, managing DNS, DHCP, and TCP/IP configurations to ensure secure and efficient network communication.",
+        "- Conducted regular network audits and implemented security measures to protect against unauthorized access and cyber threats."
+      ];
+    } else if (fileName === 'troubleshooting.txt' && path === '~/network') {
+      return [
+        "**Network Troubleshooting and Optimization**",
+        "",
+        "- Diagnosed and resolved complex network issues involving multiple subnets and VLANs.",
+        "- Utilized network monitoring tools like Wireshark and Netcat to analyze traffic and identify bottlenecks.",
+        "- Optimized network performance through traffic shaping, load balancing, and QoS (Quality of Service) settings.",
+        "- Trained team members on best practices for network management and troubleshooting."
+      ];
+    } else if (fileName === 'attachment_queue.txt' && path === '~/odoo_tools') {
+      return [
+        "**Attachment Queue** (Version: 16.0.1.2.0)",
+        "Maintainers: florian-dacosta, sebastienbeau",
+        "",
+        "Summary:",
+        "- Adds a queue system for processing files in Odoo, ensuring efficient handling of large volumes of attachments.",
+        "",
+        "Usage:",
+        "- Utilized to manage and optimize file processing in Odoo, preventing server overload and enhancing performance.",
+        "- Particularly useful in environments where bulk uploads or imports are frequent."
+      ];
+    } else if (fileName === 'auto_backup.txt' && path === '~/odoo_tools') {
+      return [
+        "**Auto Backup** (Version: 16.0.1.0.0)",
+        "",
+        "Summary:",
+        "- Automates the process of backing up databases at scheduled intervals.",
+        "",
+        "Usage:",
+        "- Configured regular backups to prevent data loss and ensure quick recovery in case of failure.",
+        "- Implemented across multiple Odoo environments to maintain data integrity."
+      ];
+    } else if (fileName === 'auditlog.txt' && path === '~/odoo_tools') {
+      return [
+        "**Audit Log** (Version: 16.0.2.2.0)",
+        "",
+        "Summary:",
+        "- Keeps a detailed log of all user actions in the Odoo system for audit purposes.",
+        "",
+        "Usage:",
+        "- Deployed to track changes and ensure accountability within the system.",
+        "- Helps in monitoring user activities and preventing unauthorized actions."
+      ];
+    } else if (fileName === 'database_cleanup.txt' && path === '~/odoo_tools') {
+      return [
+        "**Database Cleanup** (Version: 16.0.1.2.1)",
+        "",
+        "Summary:",
+        "- A module designed to clean up unnecessary data from the database to improve performance.",
+        "",
+        "Usage:",
+        "- Regularly used to remove old logs, temporary data, and other redundant information.",
+        "- Improves database efficiency and reduces storage costs."
+      ];
+    } else if (fileName === 'sentry.txt' && path === '~/odoo_tools') {
+      return [
+        "**Sentry** (Version: 16.0.3.0.2)",
+        "Maintainers: barsi, naglis, versada, moylop260, fernandahf",
+        "",
+        "Summary:",
+        "- Integrates Sentry with Odoo to report errors and track performance issues.",
+        "",
+        "Usage:",
+        "- Configured to automatically report errors to Sentry, allowing for real-time monitoring and troubleshooting.",
+        "- Essential for maintaining high availability and performance in production environments."
+      ];
+    } else if (fileName === 'server_action_logging.txt' && path === '~/odoo_tools') {
+      return [
+        "**Server Action Logging** (Version: 16.0.1.0.0)",
+        "",
+        "Summary:",
+        "- Logs server actions to track their execution and performance.",
+        "",
+        "Usage:",
+        "- Used to monitor and debug server actions, ensuring smooth operation and quick issue resolution.",
+        "- Helpful in identifying bottlenecks and optimizing server performance."
+      ];
+    } else if (fileName === 'attachment_synchronize.txt' && path === '~/odoo_tools') {
+      return [
+        "**Attachment Synchronize** (Version: 16.0.1.0.1)",
+        "Maintainers: florian-dacosta, sebastienbeau, GSLabIt, bealdav",
+        "",
+        "Summary:",
+        "- Synchronizes attachments across different environments or instances of Odoo.",
+        "",
+        "Usage:",
+        "- Deployed to ensure consistency of attachments between development, staging, and production environments.",
+        "- Facilitates seamless data migration and synchronization in multi-environment setups."
+      ];
+    } else if (fileName === 'base_cron_exclusion.txt' && path === '~/odoo_tools') {
+      return [
+        "**Base Cron Exclusion** (Version: 16.0.1.0.0)",
+        "Maintainers: LoisRForgeFlow, ChrisOForgeFlow",
+        "",
+        "Summary:",
+        "- Allows exclusion of certain scheduled actions from running simultaneously.",
+        "",
+        "Usage:",
+        "- Implemented to manage cron jobs efficiently, preventing conflicts and ensuring optimal resource usage.",
+        "- Crucial for maintaining stability in environments with multiple scheduled tasks."
+      ];
+    } else if (fileName === 'tracking_manager.txt' && path === '~/odoo_tools') {
+      return [
+        "**Tracking Manager** (Version: 16.0.1.1.2)",
+        "Maintainers: Kev-Roche, sebastienbeau",
+        "",
+        "Summary:",
+        "- Tracks changes across all fields of a model, including One2many and Many2many fields.",
+        "",
+        "Usage:",
+        "- Utilized for comprehensive tracking and auditing of data changes.",
+        "- Enhances data integrity and accountability within the Odoo system."
+      ];
     } else {
-      return [`Contents of ${fileName}`]; // Generic content for any other files
+      // Corrected block to return a warning message properly
+      return [
+        `Warning: The file '${fileName}' either has no content or cannot be read.`,
+        "Usage: cat <file> to display the contents of a file."
+      ]; // Warning message for incorrect usage or empty file
     }
-  }
+  
+    return null; // File not found in the directory
+  };
 
   return null; // File not found in the directory
 };
-
-
 
   // Memoize displayWelcomeMessage function with a new line before the ASCII art
   const displayWelcomeMessage = useCallback(() => {
