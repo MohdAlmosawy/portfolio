@@ -1,0 +1,21 @@
+/* src/components/SysAdminPage/SysAdminPage.css */
+
+.sysadmin-terminal {
+    width: 100vw;
+    height: 100vh;
+    background-color: #121212; /* Matches custom terminal background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  /* Additional styles to ensure terminal styling */
+  .xterm {
+    font-family: 'Fira Code', monospace; /* Custom font */
+    font-size: 14px;
+    text-align: left;
+    background-color: #121212 !important; /* Ensure consistent background */
+    color: #e0e0e0;
+  }
+  
