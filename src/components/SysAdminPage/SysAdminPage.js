@@ -109,6 +109,176 @@ const SysAdminPage = () => {
     terminalInstance.current.write(`\r\n${user}@${host}:${directory}$ `);
   }, []);
   
+// Function to get file content
+const getFileContent = (path, fileName, options = '') => {
+  let currentDir = directoryStructure['~'];
+
+  for (const dir of path.split('/').slice(1)) { // Navigate to the current path
+    if (currentDir && currentDir.children && currentDir.children[dir]) {
+      currentDir = currentDir.children[dir];
+    } else {
+      return null; // Path is invalid
+    }
+  }
+
+  // Return the content for specific files as an array of strings (lines)
+  if (currentDir.children[fileName]) {
+    if (fileName === 'skills.txt') {
+      if (options === '-a') {
+        return [
+          "All Skills:",
+          "- Programming Languages: Python, JavaScript, HTML/XML/CSS, Go, Java, PHP, C++",
+          "- Frameworks & Libraries: OWL, Django, Node.js, React.js, Express.js, jQuery",
+          "- Databases: PostgreSQL, SQL, MySQL, MongoDB",
+          "- Software Testing & QA: Python/JS unit tests, ISTQB software testing, Tours (Integration Testing)",
+          "- Version Control: Git, GitHub, Gitea",
+          "- CI/CD: GitHub Actions, Heroku",
+          "- Containers & Virtualization: Docker, Google Cloud VMs, Amazon EC2",
+          "- Cloud & Networking: Odoo.sh, Google Cloud (GCP), CCNA: TCP/IP, DNS, DHCP",
+          "- Operating Systems: Linux (Ubuntu, Debian, Kali, Mint), Windows",
+          "- Project Management: SDLC, Agile (Scrum, Kanban), project planning, task tracking",
+          "- API Integration: XML-RPC External API, JSON-RPC2 Extract API",
+          "- Problem-Solving: Analytical thinking, troubleshooting, finding innovative solutions",
+          "- Tools & Software: Odoo ERP, Adobe Suites",
+          "- Leadership: Team management, delegation, conflict resolution, motivating others",
+          "- Time Management: Prioritization, meeting deadlines, multi-tasking, managing multiple projects",
+          "- Communication: Collaborative, active listening, responsive, knowledge transfer",
+          "- Comprehensive IT Knowledge: Operations, Sys-Admin, Development, DevOps, Networking, Project Management",
+          "- Stakeholder Communication: Aligning IT with business needs",
+          "- Technology Selection & Strategy: Technology stack selection, best practices in development and security"
+        ];
+      } else {
+        return [
+          "Relevant System Administration Skills:",
+          "- Scripting and Automation: Python, Bash",
+          "- Database Management: PostgreSQL, MySQL, SQL",
+          "- Networking: TCP/IP, DNS, DHCP, VPN",
+          "- Containers and Virtualization: Docker, Google Cloud VMs, Amazon EC2",
+          "- Cloud Management: Google Cloud (GCP), Odoo.sh",
+          "- Operating Systems: Linux (Ubuntu, Debian, Kali, Mint), Windows",
+          "- Version Control: Git, GitHub, Gitea",
+          "- CI/CD: GitHub Actions, Heroku",
+          "- Project Management: SDLC, Agile (Scrum, Kanban)",
+          " ",
+          "[usage] cat tools.txt -a : to list all Skills"
+        ];
+      }
+    } else if (fileName === 'tools.txt') {
+      if (options === '-a') {
+        return [
+          "All Tools and Software:",
+          "- Programming and Scripting: Python, JavaScript, Bash",
+          "- Frameworks and Libraries: OWL, Django, Node.js, React.js, Express.js, jQuery",
+          "- Databases: PostgreSQL, SQL, MySQL, MongoDB",
+          "- Virtualization: Docker, Google Cloud VMs, Amazon EC2, VMware",
+          "- Networking: Wireshark, Netcat",
+          "- Performance Tuning: htop, iotop",
+          "- Network Analysis: Nmap, Traceroute",
+          "- Application Monitoring: Odoo.sh tools, Google Cloud Monitoring",
+          "- System Monitoring and Logging: Odoo logs, Google Cloud Logging",
+          "- Version Control: Git, GitHub, Gitea",
+          "- CI/CD: GitHub Actions, Heroku",
+          "- Cloud Platforms: Google Cloud (GCP), Odoo.sh",
+          "- Operating Systems: Linux (Ubuntu, Debian, Kali, Mint), Windows",
+          "- Project Management: SDLC tools, Agile tools (Scrum, Kanban)",
+          "- API Tools: Postman, Curl",
+          "- Security Tools: OpenSSL, Fail2Ban",
+          "- Web Development Tools: Chrome DevTools, VS Code",
+          "- Design Tools: Adobe Creative Suite"
+        ];
+      } else {
+        return [
+          "Relevant System Administration Tools and Software:",
+          "- Virtualization: Docker, VMware",
+          "- Scripting and Automation: Bash scripting",
+          "- Networking: Wireshark, Netcat",
+          "- Performance Tuning: htop, iotop",
+          "- Network Analysis: Nmap, Traceroute",
+          "- Application Monitoring: Odoo.sh tools, Google Cloud Monitoring",
+          "- System Monitoring and Logging: Odoo logs, Google Cloud Logging",
+          "- Version Control: Git, GitHub",
+          " ",
+          "[usage] cat tools.txt -a : to list all Tools and Software"
+        ];
+      }
+    } else if (fileName === 'about.txt') {
+      return [
+        "Sayed Mohamed Aqeel Ebrahim - System Administrator",
+        "",
+        "I began my journey as a system integrator,",
+        "implementing solutions for various companies.",
+        "Over time, my role evolved into that of a System Administrator,",
+        "taking on tasks from server management to network configuration.",
+        "",
+        "In the early days, I was a novice,",
+        "often copying and pasting commands from the internet",
+        "without fully understanding them.",
+        "",
+        "Today, I am driven by a deep passion for learning and a solid foundation in networking,",
+        "backed by my CCNA certification and Network+ studies.",
+        "",
+        "With hands-on experience in both Ubuntu and Windows environments,",
+        "I've also managed virtual machines on Google Cloud,",
+        "constantly striving to understand the intricacies of each task I undertake.",
+        "",
+        "Let's navigate through my world as a SysAdmin",
+        "and see what we can discover together!"
+      ];
+    } else if (fileName === 'contact.txt') {
+      return [
+        "Contact Me:",
+        "- Phone (BH) : +973 39541613",
+        "- Phone (KSA) : +966 561 325 240",
+        "- Email: mohd.s.aqeel@gmail.com",
+        "- LinkedIn: linkedin.com/in/SmohdAqeel",
+        "- GitHub: github.com/MohdAlmosawy"
+      ];
+    } else if (fileName === 'certifications.txt') {
+      if (options === '-a') {
+        return [
+          "Education & Certifications:",
+          "- BCS in Information Systems, University of Bahrain (Aug 2016)",
+          "- Software Engineering, Reboot 01 Coding Institute (Apr 2026)",
+          "- Full Stack Development, General Assembly (Sep 2022)",
+          "- CCNA - Routing and Switching, Cisco Systems, Inc. (Feb 2022)",
+          "- Adobe Certified Expert, Adobe Inc. (Aug 2018)"
+        ];
+      } else {
+        return [
+          "Related Education & Certifications:",
+          "- BCS in Information Systems, University of Bahrain (Aug 2016)",
+          "- CCNA - Routing and Switching, Cisco Systems, Inc. (Feb 2022)",
+          " ",
+          "[usage] cat certifications.txt -a : to list all Education & Certifications"
+        ];
+      }
+    } else if (fileName === 'README.md' && path === '~/projects/Backup_Automation') {
+      return [
+        "Project: Backup Automation System",
+        "Description: Developed and deployed a fully automated backup system across all company servers,",
+        "ensuring data integrity and security.",
+        "Key Features:",
+        "- Automated daily and weekly backups with logging and error notifications.",
+        "- Integrated with cloud storage solutions for offsite backups.",
+        "- Reduced manual backup efforts by 80%."
+      ];
+    } else if (fileName === 'README.md' && path === '~/experience/Next_Level_Trading') {
+      return [
+        "ERP System Administrator, Next Level Trading (Feb 2022 - Jul 2024):",
+        "- Customized Odoo ERP to enhance operational efficiency and reduce manual processes.",
+        "- Managed IT infrastructure, including server maintenance, network configuration, and software updates.",
+        "- Implemented a comprehensive disaster recovery plan, achieving zero data loss.",
+        "- Conducted regular system performance evaluations and optimizations, maintaining 99% uptime."
+      ];
+    } else {
+      return [`Contents of ${fileName}`]; // Generic content for any other files
+    }
+  }
+
+  return null; // File not found in the directory
+};
+
+
 
   // Memoize displayWelcomeMessage function with a new line before the ASCII art
   const displayWelcomeMessage = useCallback(() => {
@@ -131,22 +301,34 @@ const SysAdminPage = () => {
   const handleNavigation = (input) => {
     const args = input.split(' ');
     if (args[0] === 'cd') {
-      if (args[1] === '~') {
-        currentDirectoryRef.current = ['~']; // Go to root
-      } else if (args[1] === '..') {
-        if (currentDirectoryRef.current.length > 1) {
-          currentDirectoryRef.current = currentDirectoryRef.current.slice(0, -1); // Go up one level
+        if (args[1] === '~') {
+            currentDirectoryRef.current = ['~']; // Go to root
+        } else if (args[1] === '..') {
+            if (currentDirectoryRef.current.length > 1) {
+                currentDirectoryRef.current = currentDirectoryRef.current.slice(0, -1); // Go up one level
+            }
+        } else if (args[1] === '../..') {
+            currentDirectoryRef.current = ['~']; // Go back to root from any subdirectory
+        } else {
+            const currentPathArray = currentDirectoryRef.current.slice(); // Clone the current path array
+            let currentDir = directoryStructure['~']; // Start from the root directory
+
+            for (const dir of currentPathArray.slice(1)) { // Iterate over current path (skip the root '~')
+                currentDir = currentDir.children[dir]; // Traverse to the next level directory
+            }
+
+            const targetDir = currentDir.children[args[1]]; // Get the target directory
+            if (targetDir?.type === 'directory') {
+                currentDirectoryRef.current = [...currentDirectoryRef.current, args[1]]; // Navigate into directory
+            } else {
+                return `No such file or directory: ${args[1]}`;
+            }
         }
-      } else if (args[1] === '../..') {
-        currentDirectoryRef.current = ['~']; // Go back to root from any subdirectory
-      } else if (args[1] && directoryStructure[currentDirectoryRef.current.join('/')].children[args[1]]?.type === 'directory') {
-        currentDirectoryRef.current = [...currentDirectoryRef.current, args[1]]; // Navigate into directory
-      } else {
-        return `No such file or directory: ${args[1]}`;
-      }
     }
     return ''; // Return an empty string if navigation is successful
-  };
+};
+
+
   
   // Function to print the directory tree
 // Function to print the directory tree from the current path
@@ -184,14 +366,14 @@ const getSubDirectory = (pathArray) => {
   
 
   // Handle user input and display responses
-
   const handleTerminalInput = useCallback((fitAddon) => {
     terminalInstance.current.onData((data) => {
       if (data === '\r') { // Enter key
         const input = commandRef.current.trim(); // Get the trimmed input
+        const args = input.split(' '); // Split the command to check for multiple parts
   
         // Check the command entered
-        if (input === 'ls') {
+        if (args[0] === 'ls') {
           terminalInstance.current.writeln(''); // Move to the next line
           const path = currentDirectoryRef.current.join('/'); // Get current path
           const directoryContents = Object.keys(getSubDirectory(currentDirectoryRef.current)); // Fetch directory contents
@@ -202,6 +384,27 @@ const getSubDirectory = (pathArray) => {
             terminalInstance.current.writeln('No files or directories found.'); // No contents to display
           }
   
+        } else if (args[0] === 'cat' && args[1] && !args[2]) {
+          terminalInstance.current.writeln(''); // Move to the next line
+          const path = currentDirectoryRef.current.join('/');
+          const fileContent = getFileContent(path, args[1]);
+  
+          if (fileContent) {
+            fileContent.forEach(line => terminalInstance.current.writeln(line)); // Display each line of the file content
+          } else {
+            terminalInstance.current.writeln(`No such file: ${args[1]}`); // File not found message
+          }
+  
+        } else if (args[0] === 'cat' && args[1] && args[2]) {
+          terminalInstance.current.writeln(''); // Move to the next line
+          const path = currentDirectoryRef.current.join('/');
+          const fileContent = getFileContent(path, args[1], args[2]);
+
+          if (fileContent) {
+            fileContent.forEach(line => terminalInstance.current.writeln(line)); // Display each line of the file content
+          } else {
+            terminalInstance.current.writeln(`No such file: ${args[1]}`); // File not found message
+          }
         } else if (input === 'clear') {
           terminalInstance.current.clear(); // Clear the terminal, including the 'clear' command line
           commandRef.current = ''; // Reset the command buffer
@@ -254,6 +457,7 @@ const getSubDirectory = (pathArray) => {
       }
     });
   }, [showPrompt, displayWelcomeMessage]); // Ensure showPrompt and displayWelcomeMessage are included as dependencies
+  
   
   
 
@@ -314,3 +518,5 @@ const getSubDirectory = (pathArray) => {
 };
 
 export default SysAdminPage;
+
+
