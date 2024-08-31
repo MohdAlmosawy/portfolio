@@ -19,3 +19,25 @@
     color: #e0e0e0;
   }
   
+
+.sysadmin-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #121212; /* Matches terminal background */
+  }
+  
+  /* Apply styles specifically to navigation-buttons within sysadmin-page */
+  .sysadmin-page .navigation-buttons {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0; /* Add border only under sysadmin-page */
+  }
+  
+  .sysadmin-terminal {
+    flex: 1; /* Make terminal take the remaining space */
+    overflow: hidden; /* Prevent overflow */
+    position: relative; /* Ensure terminal stays within bounds */
+  }
+  
+  
