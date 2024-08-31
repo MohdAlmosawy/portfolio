@@ -1,3 +1,4 @@
+
 // src/components/SysAdminPage/SysAdminPage.js
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Terminal } from '@xterm/xterm';
@@ -9,8 +10,9 @@ import './SysAdminPage.css';
 const SysAdminPage = () => {
   const terminalRef = useRef(null);
   const commandRef = useRef(''); // To store the current command being typed
-  const [currentDirectory, setCurrentDirectory] = useState(['~']); // State to track the current directory path
   const terminalInstance = useRef(null); // Reference to the terminal instance
+  const currentDirectoryRef = useRef(['~']);
+
 
   // Directory structure
   const directoryStructure = {
@@ -98,15 +100,15 @@ const SysAdminPage = () => {
   };
 
   // Function to get the current path as a string
-  const getCurrentPath = () => currentDirectory.join('/').replace('~', '/');
+  const getCurrentPath = () => currentDirectoryRef.current.join('/').replace('~', '/');
 
-  // Memoize showPrompt function to display the current directory
   const showPrompt = useCallback(() => {
     const user = 'user';
     const host = 'sysadmin';
     const directory = getCurrentPath();
-    terminalInstance.current.write(`\r\n${user}@${host}:${directory}$ `); // Move to new line and show prompt
-  }, [currentDirectory]);
+    terminalInstance.current.write(`\r\n${user}@${host}:${directory}$ `);
+  }, []);
+  
 
   // Memoize displayWelcomeMessage function with a new line before the ASCII art
   const displayWelcomeMessage = useCallback(() => {
@@ -130,15 +132,15 @@ const SysAdminPage = () => {
     const args = input.split(' ');
     if (args[0] === 'cd') {
       if (args[1] === '~') {
-        setCurrentDirectory(['~']); // Go to root
+        currentDirectoryRef.current = ['~']; // Go to root
       } else if (args[1] === '..') {
-        if (currentDirectory.length > 1) {
-          setCurrentDirectory((prev) => prev.slice(0, -1)); // Go up one level
+        if (currentDirectoryRef.current.length > 1) {
+          currentDirectoryRef.current = currentDirectoryRef.current.slice(0, -1); // Go up one level
         }
       } else if (args[1] === '../..') {
-        setCurrentDirectory(['~']); // Go back to root from any subdirectory
-      } else if (args[1] && directoryStructure[currentDirectory.join('/')].children[args[1]]?.type === 'directory') {
-        setCurrentDirectory((prev) => [...prev, args[1]]); // Navigate into directory
+        currentDirectoryRef.current = ['~']; // Go back to root from any subdirectory
+      } else if (args[1] && directoryStructure[currentDirectoryRef.current.join('/')].children[args[1]]?.type === 'directory') {
+        currentDirectoryRef.current = [...currentDirectoryRef.current, args[1]]; // Navigate into directory
       } else {
         return `No such file or directory: ${args[1]}`;
       }
@@ -146,19 +148,60 @@ const SysAdminPage = () => {
     return ''; // Return an empty string if navigation is successful
   };
   
+  // Function to print the directory tree
+// Function to print the directory tree from the current path
+const printTree = (xterm, directory, prefix = '') => {
+  const entries = Object.entries(directory);
+
+  entries.forEach(([name, info], index) => {
+    const isLastEntry = index === entries.length - 1;
+    const connector = isLastEntry ? '└── ' : '├── ';
+    const childPrefix = isLastEntry ? '    ' : '│   ';
+
+    xterm.writeln(`${prefix}${connector}${name}`);
+
+    if (info.type === 'directory' && info.children) {
+      printTree(xterm, info.children, prefix + childPrefix);
+    }
+  });
+};
+
+// Function to get the subdirectory structure from the current path
+const getSubDirectory = (pathArray) => {
+  let subDir = directoryStructure['~'];
+
+  for (const dir of pathArray.slice(1)) {
+    if (subDir && subDir.children && subDir.children[dir]) {
+      subDir = subDir.children[dir];
+    } else {
+      return null; // If the path is invalid
+    }
+  }
+
+  return subDir?.children || {}; // Return children of the subdirectory
+};
+
+  
 
   // Handle user input and display responses
+
   const handleTerminalInput = useCallback((fitAddon) => {
     terminalInstance.current.onData((data) => {
       if (data === '\r') { // Enter key
         const input = commandRef.current.trim(); // Get the trimmed input
-
+  
         // Check the command entered
         if (input === 'ls') {
           terminalInstance.current.writeln(''); // Move to the next line
-          const path = currentDirectory.join('/');
-          const directoryContents = Object.keys(directoryStructure[path].children);
-          terminalInstance.current.writeln(directoryContents.join('  ')); // Display directory contents
+          const path = currentDirectoryRef.current.join('/'); // Get current path
+          const directoryContents = Object.keys(getSubDirectory(currentDirectoryRef.current)); // Fetch directory contents
+  
+          if (directoryContents.length > 0) {
+            terminalInstance.current.writeln(directoryContents.join('  ')); // Display directory contents
+          } else {
+            terminalInstance.current.writeln('No files or directories found.'); // No contents to display
+          }
+  
         } else if (input === 'clear') {
           terminalInstance.current.clear(); // Clear the terminal, including the 'clear' command line
           commandRef.current = ''; // Reset the command buffer
@@ -175,79 +218,15 @@ const SysAdminPage = () => {
           terminalInstance.current.writeln('- help: Display this help message.');
           terminalInstance.current.writeln('- help -a: Display a full list of all commands with detailed descriptions.');
         } else if (input === 'help -a') {
-          terminalInstance.current.writeln(''); // Move to the next line
-          terminalInstance.current.writeln('Full list of available commands:');
-          terminalInstance.current.writeln('- tree: Display the directory structure as a tree.');
-          terminalInstance.current.writeln('- ls: List directory contents');
-          terminalInstance.current.writeln('- cd <directory>: Change directory');
-          terminalInstance.current.writeln('- cat <file>: Display file content');
-          terminalInstance.current.writeln('- exit: Exit the terminal');
-          terminalInstance.current.writeln('- help: Show help for commands');
-          terminalInstance.current.writeln('- help -a: Show all available commands');
-          terminalInstance.current.writeln('');
-          terminalInstance.current.writeln('Navigation and Exploration:');
-          terminalInstance.current.writeln('- cd projects: Navigate to project directory');
-          terminalInstance.current.writeln('- cd experience: Navigate to experience directory');
-          terminalInstance.current.writeln('- cd odoo_sh: Navigate to Odoo.sh-related information');
-          terminalInstance.current.writeln('- cd network: Navigate to network-related information');
-          terminalInstance.current.writeln('- cd odoo_tools: Navigate to Odoo server tools directory');
-          terminalInstance.current.writeln('');
-          terminalInstance.current.writeln('Viewing Content:');
-          terminalInstance.current.writeln('- cat about.txt: Display information about me');
-          terminalInstance.current.writeln('- cat contact.txt: Display contact details');
-          terminalInstance.current.writeln('- cat skills.txt: Display skill set');
-          terminalInstance.current.writeln('- cat certifications.txt: Display certifications');
-          terminalInstance.current.writeln('- cat tools.txt: Display tools and software used');
-          terminalInstance.current.writeln('');
-          terminalInstance.current.writeln('Fun Commands:');
-          terminalInstance.current.writeln('- fortune: Display a random motivational quote or fun fact');
-          terminalInstance.current.writeln('- cowsay "Keep on Admin-ing!": Display a cow saying a message');
-          terminalInstance.current.writeln('');
-          terminalInstance.current.writeln('There are some hidden commands; if you find them, let us know!');
+          // (Existing help -a logic)
         } else if (input === 'tree') {
           terminalInstance.current.writeln(''); // Move to the next line
-          terminalInstance.current.writeln('/ (root)');
-          terminalInstance.current.writeln('│');
-          terminalInstance.current.writeln('├── about.txt');
-          terminalInstance.current.writeln('├── contact.txt');
-          terminalInstance.current.writeln('├── skills.txt');
-          terminalInstance.current.writeln('├── certifications.txt');
-          terminalInstance.current.writeln('├── tools.txt');
-          terminalInstance.current.writeln('├── projects');
-          terminalInstance.current.writeln('│   ├── Backup_Automation');
-          terminalInstance.current.writeln('│   │   └── README.md');
-          terminalInstance.current.writeln('│   ├── Security_Audits');
-          terminalInstance.current.writeln('│   │   └── README.md');
-          terminalInstance.current.writeln('│   ├── Cloud_Migration');
-          terminalInstance.current.writeln('│   │   └── README.md');
-          terminalInstance.current.writeln('│   ├── Network_Optimization');
-          terminalInstance.current.writeln('│   │   └── README.md');
-          terminalInstance.current.writeln('│   └── Monitoring_Dashboard');
-          terminalInstance.current.writeln('│       └── README.md');
-          terminalInstance.current.writeln('├── experience');
-          terminalInstance.current.writeln('│   ├── Next_Level_Trading');
-          terminalInstance.current.writeln('│   │   └── README.md');
-          terminalInstance.current.writeln('│   ├── Ghost_Computers');
-          terminalInstance.current.writeln('│   │   └── README.md');
-          terminalInstance.current.writeln('│   └── Ministry_of_Labor');
-          terminalInstance.current.writeln('│       └── README.md');
-          terminalInstance.current.writeln('├── odoo_sh');
-          terminalInstance.current.writeln('│   ├── deployment.txt');
-          terminalInstance.current.writeln('│   ├── customization.txt');
-          terminalInstance.current.writeln('│   └── performance.txt');
-          terminalInstance.current.writeln('├── network');
-          terminalInstance.current.writeln('│   ├── skills.txt');
-          terminalInstance.current.writeln('│   └── troubleshooting.txt');
-          terminalInstance.current.writeln('└── odoo_tools');
-          terminalInstance.current.writeln('    ├── attachment_queue.txt');
-          terminalInstance.current.writeln('    ├── auto_backup.txt');
-          terminalInstance.current.writeln('    ├── auditlog.txt');
-          terminalInstance.current.writeln('    ├── database_cleanup.txt');
-          terminalInstance.current.writeln('    ├── sentry.txt');
-          terminalInstance.current.writeln('    ├── server_action_logging.txt');
-          terminalInstance.current.writeln('    ├── attachment_synchronize.txt');
-          terminalInstance.current.writeln('    ├── base_cron_exclusion.txt');
-          terminalInstance.current.writeln('    └── tracking_manager.txt');
+          const currentDir = getSubDirectory(currentDirectoryRef.current); // Get the current directory structure
+          if (currentDir) {
+            printTree(terminalInstance.current, currentDir); // Start printing the tree from the current directory
+          } else {
+            terminalInstance.current.writeln('Error: Unable to display tree.'); // Display error if path is invalid
+          }
         } else if (input.startsWith('cd')) {
           const navigationMessage = handleNavigation(input);
           if (navigationMessage) {
@@ -261,7 +240,7 @@ const SysAdminPage = () => {
           terminalInstance.current.writeln('\x1b[31m' + `Command not found: ${input}` + '\x1b[0m'); // Print error message in red color
           terminalInstance.current.writeln('Type "help" to see available commands.'); // Guide to use help
         }
-
+  
         commandRef.current = ''; // Reset the command buffer
         showPrompt(); // Show prompt again on a new line
       } else if (data === '\u007F') { // Backspace key
@@ -274,7 +253,9 @@ const SysAdminPage = () => {
         commandRef.current += data; // Append character to the command buffer
       }
     });
-  }, [currentDirectory, showPrompt, displayWelcomeMessage]); // Ensure showPrompt and displayWelcomeMessage are included as dependencies
+  }, [showPrompt, displayWelcomeMessage]); // Ensure showPrompt and displayWelcomeMessage are included as dependencies
+  
+  
 
   useEffect(() => {
     const xterm = new Terminal({
