@@ -160,7 +160,7 @@ const getFileContent = (path, fileName, options = '') => {
           "- CI/CD: GitHub Actions, Heroku",
           "- Project Management: SDLC, Agile (Scrum, Kanban)",
           " ",
-          "[usage] cat tools.txt -a : to list all Skills"
+          "[usage] cat skills.txt -a : to list all Skills"
         ];
       }
     } else if (fileName === 'tools.txt') {
@@ -365,99 +365,143 @@ const getSubDirectory = (pathArray) => {
 
   
 
-  // Handle user input and display responses
-  const handleTerminalInput = useCallback((fitAddon) => {
-    terminalInstance.current.onData((data) => {
-      if (data === '\r') { // Enter key
-        const input = commandRef.current.trim(); // Get the trimmed input
-        const args = input.split(' '); // Split the command to check for multiple parts
-  
-        // Check the command entered
-        if (args[0] === 'ls') {
-          terminalInstance.current.writeln(''); // Move to the next line
-          const path = currentDirectoryRef.current.join('/'); // Get current path
-          const directoryContents = Object.keys(getSubDirectory(currentDirectoryRef.current)); // Fetch directory contents
-  
-          if (directoryContents.length > 0) {
-            terminalInstance.current.writeln(directoryContents.join('  ')); // Display directory contents
-          } else {
-            terminalInstance.current.writeln('No files or directories found.'); // No contents to display
-          }
-  
-        } else if (args[0] === 'cat' && args[1] && !args[2]) {
-          terminalInstance.current.writeln(''); // Move to the next line
-          const path = currentDirectoryRef.current.join('/');
-          const fileContent = getFileContent(path, args[1]);
-  
-          if (fileContent) {
-            fileContent.forEach(line => terminalInstance.current.writeln(line)); // Display each line of the file content
-          } else {
-            terminalInstance.current.writeln(`No such file: ${args[1]}`); // File not found message
-          }
-  
-        } else if (args[0] === 'cat' && args[1] && args[2]) {
-          terminalInstance.current.writeln(''); // Move to the next line
-          const path = currentDirectoryRef.current.join('/');
-          const fileContent = getFileContent(path, args[1], args[2]);
+// List of available commands for auto-completion
+const availableCommands = ['ls', 'cd', 'cat', 'clear', 'help', 'tree', 'exit'];
 
-          if (fileContent) {
-            fileContent.forEach(line => terminalInstance.current.writeln(line)); // Display each line of the file content
-          } else {
-            terminalInstance.current.writeln(`No such file: ${args[1]}`); // File not found message
-          }
-        } else if (input === 'clear') {
-          terminalInstance.current.clear(); // Clear the terminal, including the 'clear' command line
-          commandRef.current = ''; // Reset the command buffer
-          displayWelcomeMessage(); // Display the ASCII art and welcome message again
-          return; // Exit to prevent showing a new prompt immediately after
-        } else if (input === 'help') {
-          terminalInstance.current.writeln(''); // Move to the next line
-          terminalInstance.current.writeln('Available commands:');
-          terminalInstance.current.writeln('- tree: Display the directory structure as a tree.');
-          terminalInstance.current.writeln('- ls: List the contents of the current directory.');
-          terminalInstance.current.writeln('- cd <directory>: Change to a specified directory.');
-          terminalInstance.current.writeln('- cat <file>: Display the contents of a specified file.');
-          terminalInstance.current.writeln('- exit: Exit the terminal session.');
-          terminalInstance.current.writeln('- help: Display this help message.');
-          terminalInstance.current.writeln('- help -a: Display a full list of all commands with detailed descriptions.');
-        } else if (input === 'help -a') {
-          // (Existing help -a logic)
-        } else if (input === 'tree') {
-          terminalInstance.current.writeln(''); // Move to the next line
-          const currentDir = getSubDirectory(currentDirectoryRef.current); // Get the current directory structure
-          if (currentDir) {
-            printTree(terminalInstance.current, currentDir); // Start printing the tree from the current directory
-          } else {
-            terminalInstance.current.writeln('Error: Unable to display tree.'); // Display error if path is invalid
-          }
-        } else if (input.startsWith('cd')) {
-          const navigationMessage = handleNavigation(input);
-          if (navigationMessage) {
-            terminalInstance.current.writeln(''); // Move to the next line
-            terminalInstance.current.writeln(navigationMessage); // Display navigation error message
-          } else {
-            terminalInstance.current.writeln(''); // Add a line break after cd command
-          }
+// Handle user input and display responses
+const handleTerminalInput = useCallback((fitAddon) => {
+  terminalInstance.current.onData((data) => {
+    if (data === '\r') { // Enter key
+      const input = commandRef.current.trim(); // Get the trimmed input
+      const args = input.split(' '); // Split the command to check for multiple parts
+
+      // Check the command entered
+      if (args[0] === 'ls') {
+        terminalInstance.current.writeln(''); // Move to the next line
+        const path = currentDirectoryRef.current.join('/'); // Get current path
+        const directoryContents = Object.keys(getSubDirectory(currentDirectoryRef.current)); // Fetch directory contents
+
+        if (directoryContents.length > 0) {
+          terminalInstance.current.writeln(directoryContents.join('  ')); // Display directory contents
         } else {
-          terminalInstance.current.writeln(''); // Move to the next line
-          terminalInstance.current.writeln('\x1b[31m' + `Command not found: ${input}` + '\x1b[0m'); // Print error message in red color
-          terminalInstance.current.writeln('Type "help" to see available commands.'); // Guide to use help
+          terminalInstance.current.writeln('No files or directories found.'); // No contents to display
         }
-  
+
+      } else if (args[0] === 'cat' && args[1] && !args[2]) {
+        terminalInstance.current.writeln(''); // Move to the next line
+        const path = currentDirectoryRef.current.join('/');
+        const fileContent = getFileContent(path, args[1]);
+
+        if (fileContent) {
+          fileContent.forEach(line => terminalInstance.current.writeln(line)); // Display each line of the file content
+        } else {
+          terminalInstance.current.writeln(`No such file: ${args[1]}`); // File not found message
+        }
+
+      } else if (args[0] === 'cat' && args[1] && args[2]) {
+        terminalInstance.current.writeln(''); // Move to the next line
+        const path = currentDirectoryRef.current.join('/');
+        const fileContent = getFileContent(path, args[1], args[2]);
+
+        if (fileContent) {
+          fileContent.forEach(line => terminalInstance.current.writeln(line)); // Display each line of the file content
+        } else {
+          terminalInstance.current.writeln(`No such file: ${args[1]}`); // File not found message
+        }
+      } else if (input === 'clear') {
+        terminalInstance.current.clear(); // Clear the terminal, including the 'clear' command line
         commandRef.current = ''; // Reset the command buffer
-        showPrompt(); // Show prompt again on a new line
-      } else if (data === '\u007F') { // Backspace key
-        if (terminalInstance.current.buffer.active.cursorX > 2) { // Prevent backspacing over the prompt
-          terminalInstance.current.write('\b \b'); // Move cursor back, write space, then move back again
-          commandRef.current = commandRef.current.slice(0, -1); // Remove last character from command buffer
+        displayWelcomeMessage(); // Display the ASCII art and welcome message again
+        return; // Exit to prevent showing a new prompt immediately after
+      } else if (input === 'help') {
+        terminalInstance.current.writeln(''); // Move to the next line
+        terminalInstance.current.writeln('Available commands:');
+        terminalInstance.current.writeln('- tree: Display the directory structure as a tree.');
+        terminalInstance.current.writeln('- ls: List the contents of the current directory.');
+        terminalInstance.current.writeln('- cd <directory>: Change to a specified directory.');
+        terminalInstance.current.writeln('- cat <file>: Display the contents of a specified file.');
+        terminalInstance.current.writeln('- exit: Exit the terminal session.');
+        terminalInstance.current.writeln('- help: Display this help message.');
+        terminalInstance.current.writeln('- help -a: Display a full list of all commands with detailed descriptions.');
+      } else if (input === 'help -a') {
+        // (Existing help -a logic)
+      } else if (input === 'tree') {
+        terminalInstance.current.writeln(''); // Move to the next line
+        const currentDir = getSubDirectory(currentDirectoryRef.current); // Get the current directory structure
+        if (currentDir) {
+          printTree(terminalInstance.current, currentDir); // Start printing the tree from the current directory
+        } else {
+          terminalInstance.current.writeln('Error: Unable to display tree.'); // Display error if path is invalid
+        }
+      } else if (input.startsWith('cd')) {
+        const navigationMessage = handleNavigation(input);
+        if (navigationMessage) {
+          terminalInstance.current.writeln(''); // Move to the next line
+          terminalInstance.current.writeln(navigationMessage); // Display navigation error message
+        } else {
+          terminalInstance.current.writeln(''); // Add a line break after cd command
         }
       } else {
-        terminalInstance.current.write(data); // Display the user's input
-        commandRef.current += data; // Append character to the command buffer
+        terminalInstance.current.writeln(''); // Move to the next line
+        terminalInstance.current.writeln('\x1b[31m' + `Command not found: ${input}` + '\x1b[0m'); // Print error message in red color
+        terminalInstance.current.writeln('Type "help" to see available commands.'); // Guide to use help
       }
-    });
-  }, [showPrompt, displayWelcomeMessage]); // Ensure showPrompt and displayWelcomeMessage are included as dependencies
-  
+
+      commandRef.current = ''; // Reset the command buffer
+      showPrompt(); // Show prompt again on a new line
+
+    } else if (data === '\u0009') { // Tab key for auto-completion
+      const input = commandRef.current.trim();
+      const args = input.split(' ');
+
+      if (args.length === 1) {
+        // Autocomplete command names
+        const matchingCommands = availableCommands.filter(cmd => cmd.startsWith(args[0]));
+
+        if (matchingCommands.length === 1) {
+          // Only one match, autocomplete the command
+          const completion = matchingCommands[0].slice(args[0].length);
+          terminalInstance.current.write(completion);
+          commandRef.current += completion;
+        } else if (matchingCommands.length > 1) {
+          // Multiple matches, display all matching commands
+          terminalInstance.current.writeln('');
+          matchingCommands.forEach(cmd => terminalInstance.current.writeln(cmd));
+          showPrompt();
+          terminalInstance.current.write(commandRef.current);
+        }
+      } else if (args.length > 1) {
+        // Autocomplete file or directory names in the current directory
+        const currentPath = currentDirectoryRef.current.join('/');
+        const directoryContents = Object.keys(getSubDirectory(currentDirectoryRef.current));
+
+        const matchingContents = directoryContents.filter(item => item.startsWith(args[1]));
+
+        if (matchingContents.length === 1) {
+          // Only one match, autocomplete the file or directory name
+          const completion = matchingContents[0].slice(args[1].length);
+          terminalInstance.current.write(completion);
+          commandRef.current += completion;
+        } else if (matchingContents.length > 1) {
+          // Multiple matches, display all matching files and directories
+          terminalInstance.current.writeln('');
+          matchingContents.forEach(item => terminalInstance.current.writeln(item));
+          showPrompt();
+          terminalInstance.current.write(commandRef.current);
+        }
+      }
+    } else if (data === '\u007F') { // Backspace key
+      if (terminalInstance.current.buffer.active.cursorX > 2) { // Prevent backspacing over the prompt
+        terminalInstance.current.write('\b \b'); // Move cursor back, write space, then move back again
+        commandRef.current = commandRef.current.slice(0, -1); // Remove last character from command buffer
+      }
+    } else {
+      terminalInstance.current.write(data); // Display the user's input
+      commandRef.current += data; // Append character to the command buffer
+    }
+  });
+}, [showPrompt, displayWelcomeMessage]); // Ensure showPrompt and displayWelcomeMessage are included as dependencies
+
   
   
 
