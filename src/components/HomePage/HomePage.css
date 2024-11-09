@@ -53,20 +53,21 @@
 .main-title {
   font-size: 6rem;
   font-weight: 900;
+  color: var(--color-text-primary);
 }
 
 .highlight-yellow {
-  color: #ffd700;
+  color: var(--color-accent-primary);
 }
 
 .highlight-green {
-  color: #32cd32;
+  color: var(--color-accent-secondary);
 }
 
 .role-description {
   font-size: 2rem;
   margin-top: 1rem;
-  color: #c0c0c0;
+  color: var(--color-text-secondary);
 }
 
 .home-page .navigation-buttons {
@@ -84,13 +85,13 @@
 .icon-link {
   position: relative;
   font-size: 2rem;
-  color: #e0e0e0;
+  color: var(--color-text-primary);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .icon-link:hover {
-  color: #ffcc00;
+  color: var(--color-accent-primary);
 }
 
 .tooltip {
@@ -100,8 +101,8 @@
   bottom: 130%; /* Position above the icon */
   left: 50%;
   transform: translateX(-50%);
-  background-color: #333;
-  color: #fff;
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
   text-align: center;
   border-radius: 5px;
   padding: 5px;

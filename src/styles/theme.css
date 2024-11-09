@@ -1,0 +1,31 @@
+:root {
+  /* Dark Theme Colors */
+  --color-bg-primary: #121212;
+  --color-bg-secondary: #1a1d23;
+  --color-bg-tertiary: #282c34;
+  
+  --color-text-primary: #e0e0e0;
+  --color-text-secondary: #b0b0b0;
+  --color-text-muted: #808080;
+  
+  --color-border-primary: #444;
+  --color-border-secondary: #333;
+  
+  --color-accent-primary: #ffcc00;
+  --color-accent-secondary: #32cd32;
+  
+  /* Layout */
+  --header-height: 60px;
+  --sidebar-width: 250px;
+  
+  /* Typography */
+  --font-primary: 'Tajawal', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+}
+
+/* Base styles */
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-primary);
+}

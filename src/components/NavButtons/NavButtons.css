@@ -1,30 +1,29 @@
 .navigation-buttons {
   display: flex;
   gap: 1.2rem;
-  flex-wrap: wrap; /* Allows buttons to wrap if needed */
+  flex-wrap: wrap;
   justify-content: center;
 }
 
 .navigation-buttons button {
   padding: 0.6rem 1.2rem;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--color-text-primary);
   border-radius: 8px;
   font-size: 1.2rem;
-  text-decoration: none;
-  color: #e0e0e0;
+  color: var(--color-text-primary);
   background-color: transparent;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  cursor: pointer; /* Ensures it looks clickable */
-  outline: none; /* Removes the default outline on focus */
+  transition: all 0.3s ease;
+  cursor: pointer;
+  outline: none;
 }
 
 .navigation-buttons button:hover {
-  background-color: #ffcc00;
-  color: #121212;
+  background-color: var(--color-accent-primary);
+  color: var(--color-bg-primary);
+  border-color: var(--color-accent-primary);
 }
 
-/* Optional: Add focus styling to improve accessibility */
 .navigation-buttons button:focus {
-  outline: 2px solid #ffcc00;
+  outline: 2px solid var(--color-accent-primary);
   outline-offset: 2px;
 }

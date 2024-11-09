@@ -1,6 +1,6 @@
 
 // src/components/SysAdminPage/SysAdminPage.js
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
@@ -505,7 +505,6 @@ const getFileContent = (path, fileName, options = '') => {
       ]; // Warning message for incorrect usage or empty file
     }
   
-    return null; // File not found in the directory
   };
 
   return null; // File not found in the directory
@@ -609,7 +608,6 @@ const handleTerminalInput = useCallback((fitAddon) => {
       // Check the command entered
       if (args[0] === 'ls') {
         terminalInstance.current.writeln(''); // Move to the next line
-        const path = currentDirectoryRef.current.join('/'); // Get current path
         const directoryContents = Object.keys(getSubDirectory(currentDirectoryRef.current)); // Fetch directory contents
 
         if (directoryContents.length > 0) {
@@ -674,7 +672,7 @@ const handleTerminalInput = useCallback((fitAddon) => {
         }
       } else {
         terminalInstance.current.writeln(''); // Move to the next line
-        terminalInstance.current.writeln('\x1b[31m' + `Command not found: ${input}` + '\x1b[0m'); // Print error message in red color
+        terminalInstance.current.writeln(`\x1b[31m Command not found: ${input} \x1b[0m`); // Print error message in red color
         terminalInstance.current.writeln('Type "help" to see available commands.'); // Guide to use help
       }
 
@@ -703,7 +701,6 @@ const handleTerminalInput = useCallback((fitAddon) => {
         }
       } else if (args.length > 1) {
         // Autocomplete file or directory names in the current directory
-        const currentPath = currentDirectoryRef.current.join('/');
         const directoryContents = Object.keys(getSubDirectory(currentDirectoryRef.current));
 
         const matchingContents = directoryContents.filter(item => item.startsWith(args[1]));

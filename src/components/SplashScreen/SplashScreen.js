@@ -1,6 +1,6 @@
 // src/SplashScreen.js
-import React, { useEffect, useCallback, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import './SplashScreen.css';
 
 const greetings = [
@@ -15,54 +15,86 @@ const greetings = [
   "يا مرحبا",
   "Привет",
   "안녕하세요",
-  "Olá",
+  "Olá"
 ];
 
-const intervalDuration = 500; // Duration for each greeting
-const animationSettings = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-  transition: { duration: 0.5, ease: "easeInOut" } // Faster transition
-};
-
 const SplashScreen = ({ onTransitionEnd }) => {
-  const [index, setIndex] = useState(0);
-
-  const handleTransitionEnd = useCallback(() => {
-    onTransitionEnd();
-  }, [onTransitionEnd]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setIndex(prevIndex => (prevIndex + 1) % greetings.length);
-    }, intervalDuration);
+      setCurrentIndex(prevIndex => (prevIndex + 1) % greetings.length);
+    }, 500);
 
-    // Clear the interval and trigger transition end after all greetings are shown
     const transitionTimer = setTimeout(() => {
       clearInterval(timer);
-      handleTransitionEnd();
-    }, intervalDuration * greetings.length);
+      onTransitionEnd();
+    }, 500 * greetings.length);
 
     return () => {
       clearInterval(timer);
       clearTimeout(transitionTimer);
     };
-  }, [handleTransitionEnd]);
+  }, [onTransitionEnd]);
 
   return (
-    <div className="splash-screen">
-      <motion.div
-        key={index}
-        initial={animationSettings.initial}
-        animate={animationSettings.animate}
-        exit={animationSettings.exit}
-        transition={animationSettings.transition}
-        className="welcome-message"
-      >
-        <h1>{greetings[index]}</h1>
-      </motion.div>
-    </div>
+    <motion.div
+      className="splash-screen"
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="content-wrapper">
+        <div className="blob-container">
+          <motion.div
+            className="blob blob-blue"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+            }}
+          />
+          <motion.div
+            className="blob blob-purple"
+            animate={{
+              scale: [1.2, 1, 1.2],
+              opacity: [0.5, 0.3, 0.5],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+            }}
+          />
+          <motion.div
+            className="blob blob-indigo"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+            }}
+          />
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="greeting-container"
+          >
+            <h1>{greetings[currentIndex]}</h1>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
 };
 
