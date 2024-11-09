@@ -1,0 +1,44 @@
+.role-carousel {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.role-content {
+  text-align: center;
+  cursor: pointer;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.role-content:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.role-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.role-icon {
+  width: 2rem;
+  height: 2rem;
+  margin-right: 0.5rem;
+  color: #e0e0e0;
+}
+
+.role-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #e0e0e0;
+}
+
+.role-description {
+  font-size: 1.2rem;
+  color: #b0b0b0;
+} 

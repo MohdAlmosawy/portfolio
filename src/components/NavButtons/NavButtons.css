@@ -1,29 +1,47 @@
 .navigation-buttons {
   display: flex;
-  gap: 1.2rem;
+  gap: 1rem;
   flex-wrap: wrap;
   justify-content: center;
+  padding: 1rem;
 }
 
-.navigation-buttons button {
-  padding: 0.6rem 1.2rem;
-  border: 2px solid var(--color-text-primary);
-  border-radius: 8px;
-  font-size: 1.2rem;
-  color: var(--color-text-primary);
-  background-color: transparent;
-  transition: all 0.3s ease;
+.nav-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 0.5rem;
+  color: #e0e0e0;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
   cursor: pointer;
-  outline: none;
 }
 
-.navigation-buttons button:hover {
-  background-color: var(--color-accent-primary);
-  color: var(--color-bg-primary);
-  border-color: var(--color-accent-primary);
+.button-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  opacity: 0.9;
 }
 
-.navigation-buttons button:focus {
-  outline: 2px solid var(--color-accent-primary);
-  outline-offset: 2px;
+.nav-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.nav-button:active {
+  transform: translateY(0);
+}
+
+.nav-button span {
+  white-space: nowrap;
+}
+
+/* Add subtle glow effect on hover */
+.nav-button:hover .button-icon {
+  opacity: 1;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
 }
