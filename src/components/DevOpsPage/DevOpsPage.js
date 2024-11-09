@@ -5,6 +5,7 @@ import { MarkGithubIcon, ThreeBarsIcon, PlusIcon, BellIcon, RepoPullIcon, CheckI
 import { DataTable } from '@primer/react/experimental'
 import NavButtons from '../NavButtons/NavButtons'; // Custom NavButtons component
 import './DevOpsPage.css'; // Custom styling
+import PageTemplate from '../PageTemplate/PageTemplate'; // Custom PageTemplate component
 
 const workflows = [
   {
@@ -29,12 +30,8 @@ const workflows = [
 
 const DevOpsPage = () => {
   return (
-    <ThemeProvider colorMode="dark">
-      <div className="page-template">
-        <header className="page-header">
-          <NavButtons showHomeButton={true} centered={true} />
-        </header>
-
+    <PageTemplate>
+      <ThemeProvider colorMode="dark">
         <div className="page-layout">
           <aside className="sidebar">
             <Box as="nav">
@@ -150,8 +147,8 @@ const DevOpsPage = () => {
             </Box>
           </main>
         </div>
-      </div>
-    </ThemeProvider>
+      </ThemeProvider>
+    </PageTemplate>
   );
 };
 

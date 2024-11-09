@@ -1,4 +1,3 @@
-
 // src/components/SysAdminPage/SysAdminPage.js
 import React, { useEffect, useRef, useCallback } from 'react';
 import { Terminal } from '@xterm/xterm';
@@ -6,6 +5,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import NavButtons from '../NavButtons/NavButtons'; // Import NavButtons component
 import './SysAdminPage.css';
+import PageTemplate from '../PageTemplate/PageTemplate';
 
 const SysAdminPage = () => {
   const terminalRef = useRef(null);
@@ -779,13 +779,10 @@ const handleTerminalInput = useCallback((fitAddon) => {
   }, [displayWelcomeMessage, handleTerminalInput]); // Ensure all dependencies are included
 
   return (
-    <div className="sysadmin-page">
-      {/* Render navigation buttons at the top */}
-      <NavButtons showHomeButton={true} centered={false} />
-
+    <PageTemplate>
       {/* Terminal container */}
       <div ref={terminalRef} className="sysadmin-terminal"></div>
-    </div>
+    </PageTemplate>
   );
 };
 

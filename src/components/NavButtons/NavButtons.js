@@ -42,7 +42,7 @@ const buttonConfig = [
   }
 ];
 
-const NavButtons = ({ showHomeButton, centered }) => {
+const NavButtons = ({ showHomeButton, centered, isMobile }) => {
   const navigate = useNavigate();
 
   const handleNavigation = (path) => {
@@ -54,7 +54,7 @@ const NavButtons = ({ showHomeButton, centered }) => {
     : buttonConfig;
 
   return (
-    <div className={`navigation-buttons ${centered ? 'centered' : ''}`}>
+    <div className={`navigation-buttons ${centered ? 'centered' : ''} ${isMobile ? 'mobile' : ''}`}>
       {finalButtonConfig.map((button, index) => {
         const IconComponent = LucideIcons[button.icon];
         return (
