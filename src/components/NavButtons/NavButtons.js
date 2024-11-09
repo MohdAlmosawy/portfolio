@@ -6,7 +6,7 @@ import './NavButtons.css';
 
 const buttonConfig = [
   {
-    path: '/coming-soon',
+    path: '/play',
     label: 'Play My Path',
     icon: 'Gamepad2'
   },

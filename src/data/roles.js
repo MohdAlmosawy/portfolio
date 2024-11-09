@@ -33,7 +33,7 @@ export const roles = [
     title: 'Play My Path',
     icon: 'GameController',
     description: 'Experience my journey through interactive gameplay',
-    path: '/coming-soon'
+    path: '/play-test'
   },
   {
     title: 'Live My Journey',

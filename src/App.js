@@ -9,6 +9,7 @@ import ComingSoon from './components/ComingSoon/ComingSoon';
 import TerminalPage from './components/TerminalPage/TerminalPage';
 import SysAdminPage from './components/SysAdminPage/SysAdminPage';
 import DevOpsPage from './components/DevOpsPage/DevOpsPage';
+import PlayMyPath from './components/PlayMyPath/PlayMyPath';
 
 function AppContent() {
   const [showSplash, setShowSplash] = useState(false);
@@ -45,6 +46,7 @@ function AppContent() {
           <Route path="/terminal-test" element={<TerminalPage />} />
           <Route path="/sysadminer" element={<SysAdminPage />} />
           <Route path="/devopser" element={<DevOpsPage />} />
+          <Route path="/play" element={<PlayMyPath />} />
         </Routes>
       )}
     </div>
