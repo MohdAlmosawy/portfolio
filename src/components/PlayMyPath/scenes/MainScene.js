@@ -1,530 +1,324 @@
 import Phaser from 'phaser';
-import { COLLECTIBLE_TYPES, GAME_CONFIG, GHOST_BEHAVIORS, SOUND_CONFIG } from '../constants/gameConstants';
-import { createTempAssets } from '../assets/tempAssets';
 
 export class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
-        this.player = null;
-        this.enemies = null;
-        this.collectibles = null;
         this.score = 0;
-        this.sounds = {};
-    }
-
-    preload() {
-        // Create temporary assets
-        createTempAssets(this);
-
-        // Load audio files
-        // Comment these out until we have actual audio files
-        /*
-        this.load.audio('background-music', '/assets/games/audio/background.mp3');
-        this.load.audio('collect', '/assets/games/audio/collect.mp3');
-        this.load.audio('powerup', '/assets/games/audio/powerup.mp3');
-        this.load.audio('ghost-eat', '/assets/games/audio/ghost-eat.mp3');
-        this.load.audio('death', '/assets/games/audio/death.mp3');
-        */
-
-        // Create a simple programmatic sprite sheet for testing
-        const graphics = this.add.graphics();
-        
-        // Player sprite - different colors for different directions
-        graphics.fillStyle(0x00ff00); // Green
-        graphics.fillRect(0, 0, 32, 32);    // Down
-        graphics.fillRect(0, 32, 32, 32);   // Up
-        graphics.fillRect(0, 64, 32, 32);   // Left
-        graphics.fillRect(0, 96, 32, 32);   // Right
-        
-        graphics.generateTexture('player', 32, 128);
-        graphics.clear();
-
-        // Ghost sprite - red square
-        graphics.fillStyle(0xff0000);
-        graphics.fillRect(0, 0, 32, 32);
-        graphics.generateTexture('ghost', 32, 32);
-        graphics.clear();
-
-        // Collectible sprites
-        graphics.fillStyle(0xffff00);
-        graphics.fillCircle(16, 16, 8);
-        graphics.generateTexture('skill', 32, 32);
-        graphics.clear();
-
-        graphics.fillStyle(0x00ffff);
-        graphics.fillCircle(16, 16, 8);
-        graphics.generateTexture('project', 32, 32);
-        graphics.clear();
-
-        graphics.fillStyle(0xff00ff);
-        graphics.fillCircle(16, 16, 8);
-        graphics.generateTexture('certification', 32, 32);
-        graphics.destroy();
+        this.gameOver = false;
+        this.playerSpeed = 3; // Cells per second
+        this.cellSize = 32;        // Add cell size
+        this.isometricAngle = 30;  // Add isometric angle
     }
 
     create() {
-        // Create maze
-        this.createMaze();
+        // Initialize game state
+        this.initializeMaze();
+        this.initializeInput();
         
-        // Create animations
-        this.createAnimations();
-        
-        // Create player
-        this.createPlayer();
-        
-        // Create enemies
-        this.createEnemies();
-        
-        // Create collectibles
-        this.createCollectibles();
-        
-        // Set up collisions
-        this.setupCollisions();
-        
-        // Initialize sounds (with null checks)
-        this.initializeSounds();
-        
-        // Set up camera
-        this.cameras.main.startFollow(this.player);
-        
-        // Initialize score display
+        // Create score display
         this.scoreText = this.add.text(16, 16, 'Score: 0', {
             fontSize: '32px',
             fill: '#fff'
         });
         this.scoreText.setScrollFactor(0);
+
+        // Add render call after initialization
+        this.renderGame();
     }
 
-    initializeSounds() {
-        // Initialize sound objects with null checks
-        try {
-            if (this.game.cache.audio.has('background-music')) {
-                this.sounds.background = this.sound.add('background-music', { 
-                    loop: true, 
-                    volume: 0.5 
-                });
-                this.sounds.background.play();
-            }
-
-            if (this.game.cache.audio.has('collect')) {
-                this.sounds.collect = this.sound.add('collect', { volume: 0.7 });
-            }
-
-            if (this.game.cache.audio.has('powerup')) {
-                this.sounds.powerup = this.sound.add('powerup', { volume: 0.7 });
-            }
-
-            if (this.game.cache.audio.has('ghost-eat')) {
-                this.sounds.ghostEat = this.sound.add('ghost-eat', { volume: 0.7 });
-            }
-
-            if (this.game.cache.audio.has('death')) {
-                this.sounds.death = this.sound.add('death', { volume: 0.7 });
-            }
-        } catch (error) {
-            console.log('Audio initialization skipped - assets not available');
-        }
+    initializeInput() {
+        // Set up keyboard controls
+        this.cursors = this.input.keyboard.createCursorKeys();
     }
 
     update() {
+        if (this.gameOver) return;
+
+        // Handle player movement
         this.handlePlayerMovement();
-        this.updateEnemies();
-    }
-
-    createMaze() {
-        // Create a simple maze using code instead of a tilemap
-        const walls = this.physics.add.staticGroup();
         
-        // Create border walls
-        for(let i = 0; i < 25; i++) {
-            walls.create(i * 32, 0, 'wall');               // Top
-            walls.create(i * 32, 600 - 32, 'wall');        // Bottom
-            if(i < 19) {
-                walls.create(0, i * 32, 'wall');           // Left
-                walls.create(800 - 32, i * 32, 'wall');    // Right
-            }
-        }
+        // Check collisions
+        this.checkDotCollection();
+        this.checkGhostCollision();
         
-        this.walls = walls;
-    }
-
-    createPlayer() {
-        this.player = this.physics.add.sprite(100, 100, 'player');
-        this.player.setCollideWorldBounds(true);
-        this.player.setSize(28, 28); // Adjust hitbox
-    }
-
-    createEnemies() {
-        this.enemies = this.physics.add.group();
-        
-        // Create 4 ghosts with different behaviors
-        const ghostPositions = [
-            { x: 400, y: 100 },
-            { x: 400, y: 500 },
-            { x: 100, y: 300 },
-            { x: 700, y: 300 }
-        ];
-        
-        ghostPositions.forEach((pos, index) => {
-            const ghost = this.enemies.create(pos.x, pos.y, 'ghost');
-            ghost.setCollideWorldBounds(true);
-            ghost.setData('behavior', this.getGhostBehavior(index));
-        });
-    }
-
-    createCollectibles() {
-        this.collectibles = this.physics.add.group();
-        
-        // Add skills
-        COLLECTIBLE_TYPES.SKILLS.forEach(skill => {
-            this.addCollectible('skill', skill);
-        });
-        
-        // Add projects
-        COLLECTIBLE_TYPES.PROJECTS.forEach(project => {
-            this.addCollectible('project', project);
-        });
-        
-        // Add certifications
-        COLLECTIBLE_TYPES.CERTIFICATIONS.forEach(cert => {
-            this.addCollectible('certification', cert);
-        });
-    }
-
-    addCollectible(type, data) {
-        const x = Phaser.Math.Between(50, GAME_CONFIG.MAZE_WIDTH - 50);
-        const y = Phaser.Math.Between(50, GAME_CONFIG.MAZE_HEIGHT - 50);
-        
-        const collectible = this.collectibles.create(x, y, type);
-        collectible.setData('type', type);
-        collectible.setData('info', data);
-        collectible.setScale(0.75); // Adjust size if needed
-    }
-
-    setupCollisions() {
-        // Player collisions
-        this.physics.add.collider(this.player, this.walls);
-        
-        // Enemy collisions
-        this.physics.add.collider(this.enemies, this.walls);
-        this.physics.add.collider(this.enemies, this.enemies);
-        
-        // Collectible interactions
-        this.physics.add.overlap(
-            this.player,
-            this.collectibles,
-            this.collectItem,
-            null,
-            this
-        );
-        
-        // Enemy interactions
-        this.physics.add.overlap(
-            this.player,
-            this.enemies,
-            this.handleEnemyCollision,
-            null,
-            this
-        );
+        // Update ghost movement
+        this.updateGhosts();
     }
 
     handlePlayerMovement() {
-        const cursors = this.input.keyboard.createCursorKeys();
-        const speed = 160;
-        
-        // Reset velocity
-        this.player.setVelocity(0);
-        
-        // Horizontal movement
-        if (cursors.left.isDown) {
-            this.player.setVelocityX(-speed);
-            this.player.setTexture('player', 2); // Use frame directly instead of animation
-        } else if (cursors.right.isDown) {
-            this.player.setVelocityX(speed);
-            this.player.setTexture('player', 3);
+        let nextX = this.player.x;
+        let nextY = this.player.y;
+
+        if (this.cursors.left.isDown) {
+            nextX -= this.playerSpeed * (1/60);
+        } else if (this.cursors.right.isDown) {
+            nextX += this.playerSpeed * (1/60);
         }
-        
-        // Vertical movement
-        if (cursors.up.isDown) {
-            this.player.setVelocityY(-speed);
-            this.player.setTexture('player', 1);
-        } else if (cursors.down.isDown) {
-            this.player.setVelocityY(speed);
-            this.player.setTexture('player', 0);
+
+        if (this.cursors.up.isDown) {
+            nextY -= this.playerSpeed * (1/60);
+        } else if (this.cursors.down.isDown) {
+            nextY += this.playerSpeed * (1/60);
         }
-        
-        // If not moving, use idle frame
-        if (this.player.body.velocity.x === 0 && this.player.body.velocity.y === 0) {
-            this.player.setTexture('player', 0);
+
+        // Check if next position is valid (not a wall)
+        if (this.isValidPosition(nextX, nextY)) {
+            this.player.x = nextX;
+            this.player.y = nextY;
         }
     }
 
-    updateEnemies() {
-        this.enemies.getChildren().forEach(ghost => {
-            const behavior = ghost.getData('behavior');
-            if (behavior && behavior.update) {
-                behavior.update(ghost, this.player);
+    isValidPosition(x, y) {
+        // Convert position to maze coordinates
+        const cellX = Math.floor(x);
+        const cellY = Math.floor(y);
+        
+        // Check bounds
+        if (cellX < 0 || cellX >= this.maze[0].length || 
+            cellY < 0 || cellY >= this.maze.length) {
+            return false;
+        }
+        
+        // Check if position is a wall
+        return this.maze[cellY][cellX] !== 1;
+    }
+
+    checkDotCollection() {
+        const cellX = Math.floor(this.player.x);
+        const cellY = Math.floor(this.player.y);
+
+        if (this.maze[cellY][cellX] === 0) {
+            // Collect dot
+            this.maze[cellY][cellX] = 2; // Mark as collected
+            this.score += 10;
+            this.scoreText.setText(`Score: ${this.score}`);
+            
+            // Check if all dots are collected
+            if (this.checkWinCondition()) {
+                this.gameWon();
+            }
+        }
+    }
+
+    checkGhostCollision() {
+        this.ghosts.forEach(ghost => {
+            const distance = Phaser.Math.Distance.Between(
+                this.player.x, this.player.y,
+                ghost.x, ghost.y
+            );
+            
+            if (distance < 0.5) { // Collision threshold
+                this.gameOver = true;
+                this.handleGameOver();
             }
         });
     }
 
-    collectItem(player, collectible) {
-        const type = collectible.getData('type');
-        const info = collectible.getData('info') || {
-            name: type.charAt(0).toUpperCase() + type.slice(1),
-            points: type === 'skill' ? 10 : type === 'project' ? 50 : 100,
-            description: `Collected a ${type}!`
-        };
-        
-        // Update score based on type
-        switch(type) {
-            case 'skill':
-                this.score += 10;
-                if (this.sounds.collect) this.sounds.collect.play();
-                break;
-            case 'project':
-                this.score += 50;
-                if (this.sounds.collect) this.sounds.collect.play();
-                break;
-            case 'certification':
-                this.score += 100;
-                if (this.sounds.powerup) this.sounds.powerup.play();
-                break;
-            default:
-                this.score += 5;
-                break;
-        }
-        
-        // Update score display
-        this.scoreText.setText(`Score: ${this.score}`);
-        
-        // Show info popup
-        this.showInfoPopup(info);
-        
-        // Remove collectible
-        collectible.destroy();
+    updateGhosts() {
+        this.ghosts.forEach(ghost => {
+            // Simple ghost AI - move towards player
+            const angle = Phaser.Math.Angle.Between(
+                ghost.x, ghost.y,
+                this.player.x, this.player.y
+            );
+            
+            const ghostSpeed = 2; // Cells per second
+            ghost.x += Math.cos(angle) * ghostSpeed * (1/60);
+            ghost.y += Math.sin(angle) * ghostSpeed * (1/60);
+        });
     }
 
-    handleEnemyCollision(player, enemy) {
-        if (!player.getData('powered')) {
-            if (this.sounds.death) this.sounds.death.play();
-            this.gameOver();
-        } else {
-            if (this.sounds.ghostEat) this.sounds.ghostEat.play();
-            enemy.destroy();
-        }
+    checkWinCondition() {
+        return this.maze.every(row => 
+            row.every(cell => cell !== 0)
+        );
     }
 
-    gameOver() {
-        this.scene.pause();
-        // Show game over screen with final score
-        this.events.emit('gameOver', this.score);
-    }
-
-    getGhostBehavior(index) {
-        const behaviors = [
+    handleGameOver() {
+        this.add.text(
+            this.game.config.width / 2,
+            this.game.config.height / 2,
+            'Game Over!\nClick to restart',
             {
-                name: 'chase',
-                update: (ghost, player) => {
-                    const speed = 140;
-                    const angle = Phaser.Math.Angle.Between(
-                        ghost.x, ghost.y,
-                        player.x, player.y
-                    );
-                    ghost.setVelocity(
-                        Math.cos(angle) * speed,
-                        Math.sin(angle) * speed
-                    );
-                }
-            },
-            {
-                name: 'patrol',
-                update: (ghost) => {
-                    if (!ghost.getData('patrolPoints')) {
-                        ghost.setData('patrolPoints', [
-                            { x: ghost.x + 100, y: ghost.y },
-                            { x: ghost.x, y: ghost.y + 100 },
-                            { x: ghost.x - 100, y: ghost.y },
-                            { x: ghost.x, y: ghost.y - 100 }
-                        ]);
-                        ghost.setData('currentPoint', 0);
-                    }
-
-                    const points = ghost.getData('patrolPoints');
-                    const currentPoint = ghost.getData('currentPoint');
-                    const target = points[currentPoint];
-                    const speed = 120;
-                    const angle = Phaser.Math.Angle.Between(
-                        ghost.x, ghost.y,
-                        target.x, target.y
-                    );
-
-                    ghost.setVelocity(
-                        Math.cos(angle) * speed,
-                        Math.sin(angle) * speed
-                    );
-
-                    // Check if ghost reached the current point
-                    const distance = Phaser.Math.Distance.Between(
-                        ghost.x, ghost.y,
-                        target.x, target.y
-                    );
-                    if (distance < 5) {
-                        ghost.setData('currentPoint', (currentPoint + 1) % points.length);
-                    }
-                }
-            },
-            {
-                name: 'random',
-                update: (ghost) => {
-                    if (!ghost.getData('moveTimer') || ghost.getData('moveTimer') <= 0) {
-                        const angle = Phaser.Math.DegToRad(Phaser.Math.Between(0, 360));
-                        const speed = 100;
-                        ghost.setVelocity(
-                            Math.cos(angle) * speed,
-                            Math.sin(angle) * speed
-                        );
-                        ghost.setData('moveTimer', Phaser.Math.Between(2000, 4000));
-                    }
-                    ghost.setData('moveTimer', ghost.getData('moveTimer') - 16);
-                }
-            },
-            {
-                name: 'ambush',
-                update: (ghost, player) => {
-                    const speed = 130;
-                    const predictedX = player.x + (player.body.velocity.x * 2);
-                    const predictedY = player.y + (player.body.velocity.y * 2);
-                    const angle = Phaser.Math.Angle.Between(
-                        ghost.x, ghost.y,
-                        predictedX, predictedY
-                    );
-                    ghost.setVelocity(
-                        Math.cos(angle) * speed,
-                        Math.sin(angle) * speed
-                    );
-                }
+                fontSize: '48px',
+                fill: '#fff',
+                align: 'center'
             }
+        ).setOrigin(0.5);
+
+        this.input.on('pointerdown', () => {
+            this.scene.restart();
+        });
+    }
+
+    initializeMaze() {
+        // Classic PacMan maze layout (1 for walls, 0 for paths)
+        this.maze = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,1],
+            [1,1,1,1,0,1,0,0,0,0,0,0,0,1,0,1,1,1,1],
+            [1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1],
+            [0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0], // Ghost pen row
+            [1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1],
+            [1,1,1,1,0,1,0,0,0,0,0,0,0,1,0,1,1,1,1],
+            [1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
+            [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],
+            [1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,1],
+            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
         ];
-        return behaviors[index % behaviors.length];
+
+        // Initialize player position
+        this.player = {
+            x: 9,    // Center of maze
+            y: 15,   // Lower position for start
+            angle: 0
+        };
+
+        // Initialize ghosts in the pen
+        this.ghosts = [
+            { x: 8, y: 8, color: 0xFF0000 },  // Red ghost
+            { x: 9, y: 8, color: 0xFFB8FF },  // Pink ghost
+            { x: 10, y: 8, color: 0x00FFFF }, // Cyan ghost
+            { x: 9, y: 9, color: 0xFFA500 }   // Orange ghost
+        ];
+
+        // Create ALL graphics objects for rendering
+        this.wallsGraphics = this.add.graphics();
+        this.dotsGraphics = this.add.graphics();
+        this.entitiesGraphics = this.add.graphics();
+        this.glowGraphics = this.add.graphics();
     }
 
-    createAnimations() {
-        // Player animations using single frames for each direction
-        this.anims.create({
-            key: 'walk-down',
-            frames: [{ key: 'player', frame: 0 }],
-            frameRate: 1,
-            repeat: 0
-        });
+    renderGame() {
+        // Clear all graphics
+        this.wallsGraphics.clear();
+        this.dotsGraphics.clear();
+        this.entitiesGraphics.clear();
+        this.glowGraphics.clear();
 
-        this.anims.create({
-            key: 'walk-up',
-            frames: [{ key: 'player', frame: 1 }],
-            frameRate: 1,
-            repeat: 0
-        });
+        // Render all elements with isometric perspective
+        this.renderWalls();
+        this.renderDots();
+        this.renderEntities();
+    }
 
-        this.anims.create({
-            key: 'walk-left',
-            frames: [{ key: 'player', frame: 2 }],
-            frameRate: 1,
-            repeat: 0
-        });
-
-        this.anims.create({
-            key: 'walk-right',
-            frames: [{ key: 'player', frame: 3 }],
-            frameRate: 1,
-            repeat: 0
-        });
-
-        this.anims.create({
-            key: 'idle',
-            frames: [{ key: 'player', frame: 0 }],
-            frameRate: 1,
-            repeat: 0
-        });
-
-        // Simple ghost animation
-        this.anims.create({
-            key: 'ghost-move',
-            frames: [{ key: 'ghost', frame: 0 }],
-            frameRate: 1,
-            repeat: 0
+    renderWalls() {
+        this.wallsGraphics.lineStyle(3, 0x00BFFF, 1);
+        
+        this.maze.forEach((row, y) => {
+            row.forEach((cell, x) => {
+                if (cell === 1) {
+                    const pos = this.toIsometric(x, y);
+                    
+                    // Draw neon wall effect
+                    // Outer glow
+                    this.glowGraphics.lineStyle(6, 0x00BFFF, 0.2);
+                    this.drawIsometricWall(pos.x, pos.y, x, y);
+                    
+                    // Inner bright line
+                    this.wallsGraphics.lineStyle(2, 0x00BFFF, 1);
+                    this.drawIsometricWall(pos.x, pos.y, x, y);
+                }
+            });
         });
     }
 
-    showInfoPopup(info) {
-        // Remove existing popup if there is one
-        if (this.currentPopup) {
-            this.currentPopup.destroy(true);
+    drawIsometricWall(x, y, gridX, gridY) {
+        const wallThickness = this.cellSize * 0.15;  // Thin neon lines
+        const width = this.cellSize;
+        
+        // Check neighboring cells safely
+        const hasTop = gridY > 0 && this.maze[gridY-1][gridX] === 1;
+        const hasBottom = gridY < this.maze.length-1 && this.maze[gridY+1][gridX] === 1;
+        const hasLeft = gridX > 0 && this.maze[gridY][gridX-1] === 1;
+        const hasRight = gridX < this.maze[0].length-1 && this.maze[gridY][gridX+1] === 1;
+
+        // Calculate next positions using isometric projection
+        const rightPos = this.toIsometric(gridX + 1, gridY);
+        const bottomPos = this.toIsometric(gridX, gridY + 1);
+
+        if (hasLeft || hasRight) {
+            this.wallsGraphics.beginPath();
+            this.wallsGraphics.moveTo(x, y);
+            this.wallsGraphics.lineTo(rightPos.x, rightPos.y);
+            this.wallsGraphics.strokePath();
         }
 
-        // Create popup container
-        const popup = this.add.container(400, 300);
-        this.currentPopup = popup;
+        if (hasTop || hasBottom) {
+            this.wallsGraphics.beginPath();
+            this.wallsGraphics.moveTo(x, y);
+            this.wallsGraphics.lineTo(bottomPos.x, bottomPos.y);
+            this.wallsGraphics.strokePath();
+        }
+    }
 
-        // Background
-        const bg = this.add.rectangle(0, 0, 300, 150, 0x000000, 0.8);
-        bg.setStrokeStyle(2, 0xffffff);
-        popup.add(bg);
+    toIsometric(x, y) {
+        const isoX = (x - y) * Math.cos(this.isometricAngle * Math.PI / 180);
+        const isoY = ((x + y) * Math.sin(this.isometricAngle * Math.PI / 180));
+        
+        return {
+            x: (isoX * this.cellSize) + this.game.config.width / 2,
+            y: (isoY * this.cellSize) + this.game.config.height / 4
+        };
+    }
 
-        // Title
-        const title = this.add.text(0, -50, info.name, {
-            fontSize: '24px',
-            fill: '#ffffff',
-            align: 'center'
+    renderDots() {
+        this.dotsGraphics.fillStyle(0xFFFFFF, 1);
+        
+        this.maze.forEach((row, y) => {
+            row.forEach((cell, x) => {
+                if (cell === 0) {  // Uncollected dot
+                    // Get isometric position
+                    const pos = this.toIsometric(x, y);
+                    
+                    // Draw dot with glow effect
+                    // Outer glow
+                    this.glowGraphics.fillStyle(0xFFFFFF, 0.2);
+                    this.glowGraphics.fillCircle(pos.x, pos.y, 4);
+                    
+                    // Inner bright dot
+                    this.dotsGraphics.fillStyle(0xFFFFFF, 1);
+                    this.dotsGraphics.fillCircle(pos.x, pos.y, 2);
+                }
+            });
         });
-        title.setOrigin(0.5);
-        popup.add(title);
 
-        // Points
-        const points = this.add.text(0, -20, `+${info.points} points`, {
-            fontSize: '20px',
-            fill: '#00ff00',
-            align: 'center'
+        // Add power pellets with bigger dots and stronger glow
+        const powerPellets = [
+            {x: 1, y: 1},    // Top-left
+            {x: 17, y: 1},   // Top-right
+            {x: 1, y: 17},   // Bottom-left
+            {x: 17, y: 17}   // Bottom-right
+        ];
+
+        powerPellets.forEach(pellet => {
+            const pos = this.toIsometric(pellet.x, pellet.y);
+            
+            // Power pellet glow
+            this.glowGraphics.fillStyle(0xFFFFFF, 0.3);
+            this.glowGraphics.fillCircle(pos.x, pos.y, 8);
+            
+            // Power pellet dot
+            this.dotsGraphics.fillStyle(0xFFFFFF, 1);
+            this.dotsGraphics.fillCircle(pos.x, pos.y, 4);
         });
-        points.setOrigin(0.5);
-        popup.add(points);
+    }
 
-        // Description
-        const description = this.add.text(0, 10, info.description, {
-            fontSize: '16px',
-            fill: '#ffffff',
-            align: 'center',
-            wordWrap: { width: 280 }
-        });
-        description.setOrigin(0.5);
-        popup.add(description);
-
-        // Make popup follow camera
-        popup.setScrollFactor(0);
-
-        // Animate popup
-        this.tweens.add({
-            targets: popup,
-            scaleX: { from: 0, to: 1 },
-            scaleY: { from: 0, to: 1 },
-            alpha: { from: 0, to: 1 },
-            duration: 200,
-            ease: 'Back.out',
-            onComplete: () => {
-                // Auto-hide popup after 2 seconds
-                this.time.delayedCall(2000, () => {
-                    this.tweens.add({
-                        targets: popup,
-                        alpha: 0,
-                        y: popup.y - 50,
-                        duration: 200,
-                        ease: 'Power2',
-                        onComplete: () => {
-                            popup.destroy(true);
-                            this.currentPopup = null;
-                        }
-                    });
-                });
-            }
-        });
+    renderEntities() {
+        this.entitiesGraphics.clear();
+        
+        // Render Pac-Man
+        const pacmanX = this.player.x * 32 + 16;
+        const pacmanY = this.player.y * 32 + 16;
+        this.entitiesGraphics.fillStyle(0xFFFF00, 1);
+        this.entitiesGraphics.fillCircle(pacmanX, pacmanY, 16);
     }
 } 
