@@ -12,7 +12,8 @@
     "@testing-library/user-event": "^13.5.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
-    "framer-motion": "^11.3.29",
+    "framer-motion": "^11.11.11",
+    "lucide-react": "^0.456.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",
@@ -28,7 +29,8 @@
     "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:css": "postcss src/index.css -o src/index.compiled.css"
   },
   "eslintConfig": {
     "extends": [
@@ -49,8 +51,12 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
+    "autoprefixer": "^10.4.20",
     "cross-env": "^7.0.3",
-    "gh-pages": "^6.1.1"
+    "gh-pages": "^6.1.1",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14"
   }
 }
