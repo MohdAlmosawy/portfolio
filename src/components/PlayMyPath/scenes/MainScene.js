@@ -5,97 +5,220 @@ export class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
         this.score = 0;
         this.gameOver = false;
-        this.playerSpeed = 3; // Cells per second
-        this.cellSize = 32;        // Add cell size
-        this.isometricAngle = 30;  // Add isometric angle
+        this.playerSpeed = 0.15;
+        this.cellSize = 24;
+        this.isometricAngle = 30;
+
+        // Define dot types and their values
+        this.dotTypes = {
+            EMPTY: 0,
+            WALL: 1,
+            COLLECTED: 2,
+            CORE_SKILL: 3,     // Standard dots with different icons
+            CCNA_CERT: 4,      // Power pellet - Cisco
+            ADOBE_CERT: 5,     // Power pellet - Adobe
+            GRADUATION: 6,     // Power pellet - Education
+            ACCESS_PROJ: 7,    // Fruit - Access Control
+            STOCK_PROJ: 8,     // Fruit - StockFlow
+            TICKET_PROJ: 9     // Fruit - AthloTix
+        };
+
+        // Define scoring for different items
+        this.scoreValues = {
+            CORE_SKILL: 10,
+            CCNA_CERT: 50,
+            ADOBE_CERT: 50,
+            GRADUATION: 50,
+            ACCESS_PROJ: 100,
+            STOCK_PROJ: 150,
+            TICKET_PROJ: 200
+        };
+
+        // Add power mode properties
+        this.isPowerMode = false;
+        this.powerModeTimer = null;
+        this.powerModeDuration = 10000; // 10 seconds
+
+        // Add achievement descriptions
+        this.achievementInfo = {
+            CCNA_CERT: {
+                title: "CCNA Certification",
+                description: "Cisco Certified Network Associate certification, demonstrating networking expertise.",
+                year: "2019",
+                icon: "🌐"
+            },
+            ADOBE_CERT: {
+                title: "Adobe Certified Expert",
+                description: "Professional certification in Adobe Creative Suite, showcasing design capabilities.",
+                year: "2020",
+                icon: "🎨"
+            },
+            GRADUATION: {
+                title: "Bachelor's in Information Systems",
+                description: "Comprehensive education in IT systems and business processes.",
+                year: "2018",
+                icon: "🎓"
+            },
+            ACCESS_PROJ: {
+                title: "Access Control System",
+                description: "Developed a custom access control solution for Ghost Computers.",
+                tech: "Python, RFID, SQL",
+                icon: "🔐"
+            },
+            STOCK_PROJ: {
+                title: "StockFlow Inventory",
+                description: "Created an automated inventory management system.",
+                tech: "Odoo, Python, PostgreSQL",
+                icon: "📦"
+            },
+            TICKET_PROJ: {
+                title: "AthloTix Ticketing",
+                description: "Built a scalable event ticketing platform.",
+                tech: "Node.js, React, MongoDB",
+                icon: "🎟️"
+            }
+        };
+
+        // Track collected achievements
+        this.collectedAchievements = new Set();
     }
 
     create() {
-        // Initialize game state
         this.initializeMaze();
         this.initializeInput();
-        
-        // Create score display
-        this.scoreText = this.add.text(16, 16, 'Score: 0', {
-            fontSize: '32px',
-            fill: '#fff'
-        });
-        this.scoreText.setScrollFactor(0);
+        this.cameras.main.setBackgroundColor(0x000000);
 
-        // Add render call after initialization
+        // Calculate the center point of the maze in grid coordinates
+        const mazeCenterX = (this.maze[0].length - 1) / 2;
+        const mazeCenterY = (this.maze.length - 1) / 2;
+        
+        // Convert to isometric coordinates
+        const centerPos = this.toIsometric(mazeCenterX, mazeCenterY);
+        
+        // Center the camera on the maze center
+        this.cameras.main.centerOn(centerPos.x, centerPos.y);
+
+        // Add score text
+        this.scoreText = this.add.text(
+            this.game.config.width * 0.05, 
+            this.game.config.height * 0.05, 
+            'Score: 0', 
+            {
+                fontSize: '32px',
+                fill: '#fff'
+            }
+        );
+        this.scoreText.setScrollFactor(0);
+        this.scoreText.setDepth(1);
+
         this.renderGame();
     }
 
     initializeInput() {
         // Set up keyboard controls
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.currentDirection = { x: 0, y: 0 };
+        this.nextDirection = { x: 0, y: 0 };
     }
 
     update() {
-        if (this.gameOver) return;
-
-        // Handle player movement
-        this.handlePlayerMovement();
-        
-        // Check collisions
-        this.checkDotCollection();
-        this.checkGhostCollision();
-        
-        // Update ghost movement
-        this.updateGhosts();
+        if (!this.gameOver) {
+            this.handlePlayerMovement();
+            this.checkDotCollection();
+            this.renderGame();
+        }
     }
 
     handlePlayerMovement() {
-        let nextX = this.player.x;
-        let nextY = this.player.y;
-
+        // Get input
         if (this.cursors.left.isDown) {
-            nextX -= this.playerSpeed * (1/60);
+            this.nextDirection = { x: -1, y: 0 };
         } else if (this.cursors.right.isDown) {
-            nextX += this.playerSpeed * (1/60);
-        }
-
-        if (this.cursors.up.isDown) {
-            nextY -= this.playerSpeed * (1/60);
+            this.nextDirection = { x: 1, y: 0 };
+        } else if (this.cursors.up.isDown) {
+            this.nextDirection = { x: 0, y: -1 };
         } else if (this.cursors.down.isDown) {
-            nextY += this.playerSpeed * (1/60);
+            this.nextDirection = { x: 0, y: 1 };
         }
 
-        // Check if next position is valid (not a wall)
+        // Calculate next position
+        const nextX = this.player.x + (this.nextDirection.x * this.playerSpeed);
+        const nextY = this.player.y + (this.nextDirection.y * this.playerSpeed);
+
+        // Try moving in the next direction
         if (this.isValidPosition(nextX, nextY)) {
             this.player.x = nextX;
             this.player.y = nextY;
+            this.currentDirection = { ...this.nextDirection };
+        } else {
+            // Try continuing in current direction
+            const currentX = this.player.x + (this.currentDirection.x * this.playerSpeed);
+            const currentY = this.player.y + (this.currentDirection.y * this.playerSpeed);
+            
+            if (this.isValidPosition(currentX, currentY)) {
+                this.player.x = currentX;
+                this.player.y = currentY;
+            }
+        }
+
+        // Handle tunnel wrapping
+        if (this.player.x < 0) {
+            this.player.x = this.maze[0].length - 1;
+        } else if (this.player.x >= this.maze[0].length) {
+            this.player.x = 0;
         }
     }
 
     isValidPosition(x, y) {
-        // Convert position to maze coordinates
-        const cellX = Math.floor(x);
-        const cellY = Math.floor(y);
+        const gridX = Math.floor(x);
+        const gridY = Math.floor(y);
         
-        // Check bounds
-        if (cellX < 0 || cellX >= this.maze[0].length || 
-            cellY < 0 || cellY >= this.maze.length) {
+        // Check vertical bounds
+        if (gridY < 0 || gridY >= this.maze.length) {
             return false;
         }
         
+        // Handle horizontal wrapping for tunnels
+        let checkX = gridX;
+        if (gridX < 0) {
+            checkX = this.maze[0].length - 1;
+        } else if (gridX >= this.maze[0].length) {
+            checkX = 0;
+        }
+        
         // Check if position is a wall
-        return this.maze[cellY][cellX] !== 1;
+        return this.maze[gridY][checkX] !== 1;
     }
 
     checkDotCollection() {
-        const cellX = Math.floor(this.player.x);
-        const cellY = Math.floor(this.player.y);
+        const gridX = Math.floor(this.player.x);
+        const gridY = Math.floor(this.player.y);
 
-        if (this.maze[cellY][cellX] === 0) {
-            // Collect dot
-            this.maze[cellY][cellX] = 2; // Mark as collected
-            this.score += 10;
+        let checkX = gridX;
+        if (gridX < 0) checkX = this.maze[0].length - 1;
+        if (gridX >= this.maze[0].length) checkX = 0;
+
+        const dotType = this.maze[gridY][checkX];
+        if (dotType !== this.dotTypes.WALL && dotType !== this.dotTypes.COLLECTED) {
+            // Add score
+            this.score += this.scoreValues[Object.keys(this.dotTypes)[dotType]] || 0;
             this.scoreText.setText(`Score: ${this.score}`);
             
-            // Check if all dots are collected
-            if (this.checkWinCondition()) {
-                this.gameWon();
+            // Show achievement info for special items
+            if (dotType >= this.dotTypes.CCNA_CERT) {
+                if (!this.collectedAchievements.has(dotType)) {
+                    this.showAchievementInfo(dotType);
+                    this.collectedAchievements.add(dotType);
+                }
+            }
+
+            // Mark as collected
+            this.maze[gridY][checkX] = this.dotTypes.COLLECTED;
+
+            // Handle power mode
+            if ([this.dotTypes.CCNA_CERT, this.dotTypes.ADOBE_CERT, 
+                 this.dotTypes.GRADUATION].includes(dotType)) {
+                this.activatePowerMode();
             }
         }
     }
@@ -152,49 +275,49 @@ export class MainScene extends Phaser.Scene {
     }
 
     initializeMaze() {
-        // Classic PacMan maze layout (1 for walls, 0 for paths)
+        // Initialize base maze with walls (1) and paths (0)
         this.maze = [
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
-            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1],
-            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
-            [1,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,1],
-            [1,1,1,1,0,1,0,0,0,0,0,0,0,1,0,1,1,1,1],
-            [1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1],
-            [0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0], // Ghost pen row
-            [1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1],
-            [1,1,1,1,0,1,0,0,0,0,0,0,0,1,0,1,1,1,1],
-            [1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,1],
-            [1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
-            [1,0,1,1,0,1,1,1,0,1,0,1,1,1,0,1,1,0,1],
-            [1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],
-            [1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,1],
-            [1,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,1],
+            [1,4,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,5,1], // CCNA & Adobe certs at corners
+            [1,3,1,1,3,1,1,1,3,1,3,1,1,1,3,1,1,3,1],
+            [1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+            [1,3,1,1,3,1,3,1,1,1,1,1,3,1,3,1,1,3,1],
+            [1,3,3,3,3,1,3,3,3,1,3,3,3,1,3,3,3,3,1],
+            [1,1,1,1,3,1,1,1,0,1,0,1,1,1,3,1,1,1,1],
+            [1,1,1,1,3,1,3,3,3,3,3,3,3,1,3,1,1,1,1],
+            [1,1,1,1,3,1,3,1,1,0,1,1,3,1,3,1,1,1,1],
+            [0,3,3,3,3,3,3,1,0,0,0,1,3,3,3,3,3,3,0],
+            [1,1,1,1,3,1,3,1,1,1,1,1,3,1,3,1,1,1,1],
+            [1,1,1,1,3,1,3,3,3,3,3,3,3,1,3,1,1,1,1],
+            [1,1,1,1,3,1,3,1,1,1,1,1,3,1,3,1,1,1,1],
+            [1,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,1],
+            [1,3,1,1,3,1,1,1,3,1,3,1,1,1,3,1,1,3,1],
+            [1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,1,3,3,1],
+            [1,1,3,1,3,1,3,1,1,1,1,1,3,1,3,1,3,1,1],
+            [1,6,3,3,3,1,3,3,3,1,3,3,3,1,3,3,3,6,1], // Graduation caps at corners
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
         ];
 
-        // Initialize player position
+        // Add special project items (fruits) at specific locations
+        this.specialItems = [
+            { type: this.dotTypes.ACCESS_PROJ, x: 9, y: 7 },
+            { type: this.dotTypes.STOCK_PROJ, x: 9, y: 10 },
+            { type: this.dotTypes.TICKET_PROJ, x: 5, y: 9 }
+        ];
+
+        // Initialize player
         this.player = {
-            x: 9,    // Center of maze
-            y: 15,   // Lower position for start
+            x: 9.0,
+            y: 15.0,
             angle: 0
         };
 
-        // Initialize ghosts in the pen
-        this.ghosts = [
-            { x: 8, y: 8, color: 0xFF0000 },  // Red ghost
-            { x: 9, y: 8, color: 0xFFB8FF },  // Pink ghost
-            { x: 10, y: 8, color: 0x00FFFF }, // Cyan ghost
-            { x: 9, y: 9, color: 0xFFA500 }   // Orange ghost
-        ];
-
-        // Create ALL graphics objects for rendering
+        // Initialize graphics objects
         this.wallsGraphics = this.add.graphics();
         this.dotsGraphics = this.add.graphics();
         this.entitiesGraphics = this.add.graphics();
         this.glowGraphics = this.add.graphics();
+        this.specialGraphics = this.add.graphics();
     }
 
     renderGame() {
@@ -203,6 +326,7 @@ export class MainScene extends Phaser.Scene {
         this.dotsGraphics.clear();
         this.entitiesGraphics.clear();
         this.glowGraphics.clear();
+        this.specialGraphics.clear();
 
         // Render all elements with isometric perspective
         this.renderWalls();
@@ -261,64 +385,249 @@ export class MainScene extends Phaser.Scene {
     }
 
     toIsometric(x, y) {
+        // Convert grid coordinates to isometric coordinates
         const isoX = (x - y) * Math.cos(this.isometricAngle * Math.PI / 180);
-        const isoY = ((x + y) * Math.sin(this.isometricAngle * Math.PI / 180));
+        const isoY = (x + y) * Math.sin(this.isometricAngle * Math.PI / 180);
         
+        // Center in the viewport
         return {
-            x: (isoX * this.cellSize) + this.game.config.width / 2,
-            y: (isoY * this.cellSize) + this.game.config.height / 4
+            x: (isoX * this.cellSize) + (this.game.config.width / 2),
+            y: (isoY * this.cellSize) + (this.game.config.height / 2)
         };
     }
 
     renderDots() {
-        this.dotsGraphics.fillStyle(0xFFFFFF, 1);
+        this.dotsGraphics.clear();
         
         this.maze.forEach((row, y) => {
             row.forEach((cell, x) => {
-                if (cell === 0) {  // Uncollected dot
-                    // Get isometric position
+                if (cell !== this.dotTypes.WALL && cell !== this.dotTypes.COLLECTED) {
                     const pos = this.toIsometric(x, y);
                     
-                    // Draw dot with glow effect
-                    // Outer glow
-                    this.glowGraphics.fillStyle(0xFFFFFF, 0.2);
-                    this.glowGraphics.fillCircle(pos.x, pos.y, 4);
-                    
-                    // Inner bright dot
-                    this.dotsGraphics.fillStyle(0xFFFFFF, 1);
-                    this.dotsGraphics.fillCircle(pos.x, pos.y, 2);
+                    switch(cell) {
+                        case this.dotTypes.CORE_SKILL:
+                            this.renderCoreSkill(pos.x, pos.y);
+                            break;
+                        case this.dotTypes.CCNA_CERT:
+                            this.renderCCNACert(pos.x, pos.y);
+                            break;
+                        case this.dotTypes.ADOBE_CERT:
+                            this.renderAdobeCert(pos.x, pos.y);
+                            break;
+                        case this.dotTypes.GRADUATION:
+                            this.renderGraduation(pos.x, pos.y);
+                            break;
+                        case this.dotTypes.ACCESS_PROJ:
+                            this.renderAccessProject(pos.x, pos.y);
+                            break;
+                        case this.dotTypes.STOCK_PROJ:
+                            this.renderStockProject(pos.x, pos.y);
+                            break;
+                        case this.dotTypes.TICKET_PROJ:
+                            this.renderTicketProject(pos.x, pos.y);
+                            break;
+                    }
                 }
             });
         });
+    }
 
-        // Add power pellets with bigger dots and stronger glow
-        const powerPellets = [
-            {x: 1, y: 1},    // Top-left
-            {x: 17, y: 1},   // Top-right
-            {x: 1, y: 17},   // Bottom-left
-            {x: 17, y: 17}   // Bottom-right
-        ];
+    renderCoreSkill(x, y) {
+        // Core skill dot with code bracket symbol
+        this.dotsGraphics.lineStyle(1, 0xFFFFFF);
+        this.dotsGraphics.strokeCircle(x, y, 4);
+        this.dotsGraphics.fillStyle(0xFFFFFF, 1);
+        this.dotsGraphics.fillCircle(x, y, 2);
+    }
 
-        powerPellets.forEach(pellet => {
-            const pos = this.toIsometric(pellet.x, pellet.y);
-            
-            // Power pellet glow
-            this.glowGraphics.fillStyle(0xFFFFFF, 0.3);
-            this.glowGraphics.fillCircle(pos.x, pos.y, 8);
-            
-            // Power pellet dot
-            this.dotsGraphics.fillStyle(0xFFFFFF, 1);
-            this.dotsGraphics.fillCircle(pos.x, pos.y, 4);
-        });
+    renderCCNACert(x, y) {
+        // CCNA certification power pellet
+        this.glowGraphics.fillStyle(0x00BFFF, 0.3);
+        this.glowGraphics.fillCircle(x, y, 8);
+        this.dotsGraphics.fillStyle(0x00BFFF, 1);
+        this.dotsGraphics.fillCircle(x, y, 6);
+    }
+
+    renderAdobeCert(x, y) {
+        // Adobe certification power pellet
+        this.glowGraphics.fillStyle(0xFF0000, 0.3);
+        this.glowGraphics.fillCircle(x, y, 8);
+        this.dotsGraphics.fillStyle(0xFF0000, 1);
+        this.dotsGraphics.fillCircle(x, y, 6);
+    }
+
+    renderGraduation(x, y) {
+        // Graduation power pellet
+        this.glowGraphics.fillStyle(0xFFD700, 0.3);
+        this.glowGraphics.fillCircle(x, y, 8);
+        this.dotsGraphics.fillStyle(0xFFD700, 1);
+        this.dotsGraphics.fillCircle(x, y, 6);
     }
 
     renderEntities() {
         this.entitiesGraphics.clear();
         
-        // Render Pac-Man
-        const pacmanX = this.player.x * 32 + 16;
-        const pacmanY = this.player.y * 32 + 16;
+        // Get isometric position for Pac-Man
+        const pacmanPos = this.toIsometric(this.player.x, this.player.y);
+        
+        // Render glow (enhanced during power mode)
+        const glowAlpha = this.isPowerMode ? 0.5 : 0.3;
+        const glowSize = this.isPowerMode ? 12 : 10;
+        this.glowGraphics.fillStyle(0xFFFF00, glowAlpha);
+        this.glowGraphics.fillCircle(pacmanPos.x, pacmanPos.y, glowSize);
+        
+        // Render Pac-Man (slightly larger during power mode)
         this.entitiesGraphics.fillStyle(0xFFFF00, 1);
-        this.entitiesGraphics.fillCircle(pacmanX, pacmanY, 16);
+        this.entitiesGraphics.fillCircle(pacmanPos.x, pacmanPos.y, 
+            this.isPowerMode ? 10 : 8);
+    }
+
+    renderAccessProject(x, y) {
+        // Key symbol for Access Control project
+        this.glowGraphics.fillStyle(0x00FF00, 0.3);
+        this.glowGraphics.fillCircle(x, y, 10);
+        
+        // Draw key symbol
+        this.specialGraphics.lineStyle(2, 0x00FF00);
+        this.specialGraphics.beginPath();
+        this.specialGraphics.arc(x, y, 6, 0, Math.PI * 2);
+        this.specialGraphics.moveTo(x + 6, y);
+        this.specialGraphics.lineTo(x + 12, y);
+        this.specialGraphics.strokePath();
+    }
+
+    renderStockProject(x, y) {
+        // Barcode symbol for StockFlow project
+        this.glowGraphics.fillStyle(0x0000FF, 0.3);
+        this.glowGraphics.fillCircle(x, y, 10);
+        
+        // Draw simplified barcode
+        this.specialGraphics.lineStyle(2, 0x0000FF);
+        for(let i = -6; i <= 6; i += 3) {
+            this.specialGraphics.beginPath();
+            this.specialGraphics.moveTo(x + i, y - 6);
+            this.specialGraphics.lineTo(x + i, y + 6);
+            this.specialGraphics.strokePath();
+        }
+    }
+
+    renderTicketProject(x, y) {
+        // Ticket symbol for AthloTix project
+        this.glowGraphics.fillStyle(0xFF00FF, 0.3);
+        this.glowGraphics.fillCircle(x, y, 10);
+        
+        // Draw ticket shape
+        this.specialGraphics.lineStyle(2, 0xFF00FF);
+        this.specialGraphics.strokeRect(x - 6, y - 4, 12, 8);
+        this.specialGraphics.beginPath();
+        this.specialGraphics.moveTo(x, y - 4);
+        this.specialGraphics.lineTo(x, y + 4);
+        this.specialGraphics.strokePath();
+    }
+
+    activatePowerMode() {
+        // Clear existing timer if there is one
+        if (this.powerModeTimer) {
+            clearTimeout(this.powerModeTimer);
+        }
+
+        // Activate power mode
+        this.isPowerMode = true;
+
+        // Add visual feedback
+        this.player.powerMode = true;
+        
+        // Optional: Add visual effect to player
+        this.glowGraphics.fillStyle(0xFFFF00, 0.5);
+        
+        // Set timer to deactivate power mode
+        this.powerModeTimer = setTimeout(() => {
+            this.deactivatePowerMode();
+        }, this.powerModeDuration);
+
+        // Optional: Add power mode indicator
+        if (this.powerModeText) {
+            this.powerModeText.destroy();
+        }
+        this.powerModeText = this.add.text(
+            this.game.config.width * 0.05,
+            this.game.config.height * 0.1,
+            'POWER MODE!',
+            {
+                fontSize: '24px',
+                fill: '#FFD700',
+                fontStyle: 'bold'
+            }
+        );
+        this.powerModeText.setScrollFactor(0);
+        this.powerModeText.setDepth(1);
+    }
+
+    deactivatePowerMode() {
+        this.isPowerMode = false;
+        this.player.powerMode = false;
+        
+        // Remove power mode indicator
+        if (this.powerModeText) {
+            this.powerModeText.destroy();
+            this.powerModeText = null;
+        }
+
+        // Clear the timer
+        if (this.powerModeTimer) {
+            clearTimeout(this.powerModeTimer);
+            this.powerModeTimer = null;
+        }
+    }
+
+    showAchievementInfo(type) {
+        const info = this.achievementInfo[Object.keys(this.dotTypes)[type]];
+        if (!info) return;
+
+        // Create achievement display at the very bottom of the viewport
+        const achievementDisplay = this.add.container(
+            this.game.config.width * 0.5,  // Center horizontally
+            this.game.config.height - 30    // Position at very bottom with small padding
+        );
+
+        // Background panel (single line)
+        const panel = this.add.graphics();
+        panel.fillStyle(0x000000, 0.9);
+        panel.fillRoundedRect(-300, -20, 600, 40, 8);  // Slightly smaller height
+        panel.lineStyle(2, 0xFFD700);
+        panel.strokeRoundedRect(-300, -20, 600, 40, 8);
+
+        // Single line achievement content
+        const content = this.add.text(-290, -12,  // Adjusted text position
+            `${info.icon} ${info.title} - ${info.year ? `Year: ${info.year}` : `Tech: ${info.tech}`}`, {
+            fontSize: '18px',  // Slightly smaller font
+            fill: '#FFD700',
+            fontStyle: 'bold'
+        });
+
+        achievementDisplay.add([panel, content]);
+        achievementDisplay.setDepth(100);
+        achievementDisplay.setScrollFactor(0);  // Ensure it stays fixed on screen
+
+        // Animate display from below screen
+        this.tweens.add({
+            targets: achievementDisplay,
+            alpha: { from: 0, to: 1 },
+            y: { from: this.game.config.height + 40, to: this.game.config.height - 30 },
+            duration: 500,
+            ease: 'Power2'
+        });
+
+        // Auto-hide with slide-down
+        setTimeout(() => {
+            this.tweens.add({
+                targets: achievementDisplay,
+                alpha: 0,
+                y: this.game.config.height + 40,
+                duration: 500,
+                ease: 'Power2',
+                onComplete: () => achievementDisplay.destroy()
+            });
+        }, 5000);
     }
 } 
