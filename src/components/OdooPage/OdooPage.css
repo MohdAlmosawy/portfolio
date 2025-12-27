@@ -1,0 +1,60 @@
+/* Odoo Page Styles - Ported from odoo portfolio */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --odoo-navbar-height: 46px;
+  --odoo-brand-purple: #714B67;
+  --odoo-primary: #00A09D;
+  --odoo-view-bg: #F1F2F5;
+}
+
+.odoo-page-container {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #212529;
+  background-color: var(--odoo-view-bg);
+}
+
+/* Odoo specific scrollbar */
+.odoo-page-container ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.odoo-page-container ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.odoo-page-container ::-webkit-scrollbar-thumb {
+  background: #ced4da;
+  border-radius: 10px;
+}
+
+.odoo-page-container ::-webkit-scrollbar-thumb:hover {
+  background: #adb5bd;
+}
+
+/* Odoo Kanban transitions */
+.o_kanban_record {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.o_search_panel_label {
+  font-size: 13px;
+  color: #4c4c4c;
+}
+
+.o_search_panel_section_header {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4c4c4c;
+  letter-spacing: 0.05em;
+}
+
+/* Ensure proper height calculation within PageTemplate */
+.odoo-page-container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+

@@ -9,6 +9,7 @@ import ComingSoon from './components/ComingSoon/ComingSoon';
 import TerminalPage from './components/TerminalPage/TerminalPage';
 import SysAdminPage from './components/SysAdminPage/SysAdminPage';
 import DevOpsPage from './components/DevOpsPage/DevOpsPage';
+import OdooPage from './components/OdooPage/OdooPage';
 import PlayMyPath from './components/PlayMyPath/PlayMyPath';
 
 function AppContent() {
@@ -46,6 +47,7 @@ function AppContent() {
           <Route path="/terminal-test" element={<TerminalPage />} />
           <Route path="/sysadminer" element={<SysAdminPage />} />
           <Route path="/devopser" element={<DevOpsPage />} />
+          <Route path="/odooer" element={<OdooPage />} />
           <Route path="/play" element={<PlayMyPath />} />
         </Routes>
       )}

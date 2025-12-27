@@ -21,7 +21,7 @@ const buttonConfig = [
     icon: 'Server'
   },
   {
-    path: '/coming-soon',
+    path: '/odooer',
     label: 'Odoo-er',
     icon: 'Briefcase'
   },
