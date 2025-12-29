@@ -1,0 +1,12 @@
+/* src/components/TerminalPage/TerminalPage.css */
+
+.terminal-container {
+    width: 100vw; /* Full width of the viewport */
+    height: 100vh; /* Full height of the viewport */
+    background-color: rgb(18, 18, 18); /* Matches Snazzy theme background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Prevents overflow */
+  }
+  

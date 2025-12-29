@@ -1,0 +1,25 @@
+{
+    "version": 1,
+    "width": 25,
+    "height": 19,
+    "tilewidth": 32,
+    "tileheight": 32,
+    "layers": [
+        {
+            "name": "Walls",
+            "data": [
+                // Your maze layout here (1 for walls, 0 for paths)
+                // This is a simplified example
+                1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,
+                1,0,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,0,1,
+                // ... continue with your maze layout
+            ],
+            "width": 25,
+            "height": 19,
+            "visible": true,
+            "opacity": 1,
+            "type": "tilelayer"
+        }
+    ]
+} 

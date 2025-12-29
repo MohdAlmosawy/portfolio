@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+@layer components {
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500;
+  }
+
+  .social-link-wrapper {
+    @apply relative text-gray-300 hover:text-white transition-colors;
+  }
+
+  .social-tooltip {
+    @apply absolute -top-8 left-1/2 transform -translate-x-1/2 
+           bg-gray-800 px-2 py-1 rounded text-xs sm:text-sm 
+           opacity-0 transition-opacity whitespace-nowrap;
+  }
+}

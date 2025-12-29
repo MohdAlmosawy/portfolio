@@ -1,0 +1,83 @@
+/* src/SplashScreen.css */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  background-color: black;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.content-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 32rem;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.blob-container {
+  position: absolute;
+  width: 100%;
+  max-width: 32rem;
+}
+
+.blob {
+  position: absolute;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 9999px;
+  mix-blend-mode: multiply;
+  filter: blur(1rem);
+}
+
+.blob-blue {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+.blob-purple {
+  top: 50%;
+  left: calc(50% - 11rem);
+  transform: translateY(-50%);
+  background-color: rgba(168, 85, 247, 0.3);
+}
+
+.blob-indigo {
+  top: calc(50% - 1rem);
+  right: calc(50% - 11rem);
+  background-color: rgba(99, 102, 241, 0.3);
+}
+
+.greeting-container {
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.greeting-container h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(to right, #60a5fa, #a78bfa, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (max-width: 640px) {
+  .greeting-container h1 {
+    font-size: 2.5rem;
+  }
+  
+  .blob {
+    width: 8rem;
+    height: 8rem;
+  }
+}

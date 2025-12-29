@@ -1,0 +1,161 @@
+.play-my-path {
+    @apply min-h-screen bg-gradient-to-br from-gray-900 to-gray-800;
+    padding-top: 64px;
+}
+
+/* Instructions Styles */
+.instructions {
+    @apply max-w-2xl mx-auto p-8;
+}
+
+.instructions-content {
+    @apply bg-gray-800/90 rounded-lg p-8 text-white text-center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.instructions-icon {
+    @apply mx-auto mb-6 text-blue-400;
+}
+
+.instructions h1 {
+    @apply text-3xl font-bold mb-4 text-blue-400;
+}
+
+.instructions p {
+    @apply text-lg mb-8 text-gray-300;
+}
+
+.controls {
+    @apply mb-8 text-left;
+}
+
+.controls h2 {
+    @apply text-xl font-semibold mb-4 text-blue-300;
+}
+
+.controls ul {
+    @apply space-y-3;
+}
+
+.controls li {
+    @apply flex items-center gap-3 text-gray-300;
+}
+
+.start-button {
+    @apply bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg 
+    transition-colors duration-200 shadow-lg w-full;
+}
+
+/* Game Styles */
+.game-wrapper {
+    @apply relative flex justify-center items-center;
+    min-height: calc(100vh - 64px);
+}
+
+#game-container {
+    width: 800px;
+    height: 600px;
+    background: #000;
+    border-radius: 8px;
+    border: 2px solid rgba(59, 130, 246, 0.5);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+#game-container canvas {
+    border-radius: 8px;
+}
+
+.instructions-button {
+    @apply fixed top-20 right-4 flex items-center gap-2 bg-gray-800/90 hover:bg-gray-700 
+    text-white px-4 py-2 rounded-lg shadow-md transition-colors duration-200;
+    z-index: 50;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 840px) {
+    #game-container {
+        width: 95vw;
+        height: calc(95vw * 3/4);
+        max-height: calc(90vh - 80px);
+    }
+    
+    .instructions {
+        @apply p-4;
+    }
+    
+    .instructions-content {
+        @apply p-4;
+    }
+    
+    .instructions h1 {
+        @apply text-2xl;
+    }
+    
+    .instructions p {
+        @apply text-base;
+    }
+} 
+
+/* Game Over Styles */
+.game-over {
+    @apply max-w-2xl mx-auto p-8;
+}
+
+.game-over-content {
+    @apply bg-gray-800/90 rounded-lg p-8 text-white text-center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.game-over-icon {
+    @apply mx-auto mb-6 text-yellow-400;
+}
+
+.game-over h1 {
+    @apply text-3xl font-bold mb-6 text-blue-400;
+}
+
+.score-display {
+    @apply mb-8 p-6 bg-gray-900/50 rounded-lg;
+}
+
+.score-display h2 {
+    @apply text-xl font-semibold mb-2 text-blue-300;
+}
+
+.score-display .score {
+    @apply text-4xl font-bold text-yellow-400;
+}
+
+.game-over-buttons {
+    @apply flex flex-col gap-4;
+}
+
+.restart-button {
+    @apply flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 
+    text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 
+    shadow-lg w-full;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 840px) {
+    .game-over {
+        @apply p-4;
+    }
+    
+    .game-over-content {
+        @apply p-4;
+    }
+    
+    .game-over h1 {
+        @apply text-2xl;
+    }
+    
+    .score-display {
+        @apply p-4;
+    }
+    
+    .score-display .score {
+        @apply text-3xl;
+    }
+} 
